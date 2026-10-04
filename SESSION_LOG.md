@@ -80,3 +80,8 @@
 - Verified: await fonts.ready, focal within 1px for 9 combos, zero network, vite build 10kB, main.ts <150, lint/tsc/test/lines OK.
 - Next: T-040 timeline builder.
 - Bugs: none.
+
+## S14 — 2026-10-04 — T-040 timeline
+- Done: Added `src/timeline/buildTimeline.ts` (cuts×duration → FrameSpec[], clamp 4-30/1-5/zoom/blur, frameDur 1000/cuts, tail zoom ramp last 20% 1→zoomMax, blur random, filler 4 lines, no consecutive duplicate via pickLayout). Added `tests/timeline.test.ts` (8 tests) for 24 frames, clamp, zoom monotonic, determinism, no-repeat, duration, blur bounds. 88 tests pass.
+- Next: T-041 animated preview + progress + examples.
+- Bugs: none.

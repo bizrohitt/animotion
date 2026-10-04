@@ -89,7 +89,7 @@ Legend: `ID` — `Phase` — `Status`
 
 ## P4 — Timeline + Preview Playback
 
-- [ ] **T-040 — Timeline builder (cuts/s → FrameSpec[])**
+- [x] **T-040 — Timeline builder (cuts/s → FrameSpec[])**
   - Files: `src/timeline/buildTimeline.ts`, `tests/timeline.test.ts`
   - Inputs: `src/types.ts`, `src/config.ts`, `src/layout/layoutEngine.ts`
   - Outputs: `buildTimeline(parsed, opts: { cutsPerSec, durationSec, zoomMax, seed }) -> FrameSpec[]` with zoom ramp in last 20% frames
