@@ -95,7 +95,7 @@ Legend: `ID` — `Phase` — `Status`
   - Outputs: `buildTimeline(parsed, opts: { cutsPerSec, durationSec, zoomMax, seed }) -> FrameSpec[]` with zoom ramp in last 20% frames
   - Acceptance: 12 cuts/s × 2s → 24 specs; 4-30 cuts/s range valid; zoom monotonic increase in tail; deterministic with seed; no consecutive duplicate preset
 
-- [ ] **T-041 — Animated preview (no export) + progress + examples**
+- [x] **T-041 — Animated preview (no export) + progress + examples**
   - Files: `src/ui/progress.ts`, `src/ui/examples.ts`, `src/main.ts` (wire preview loop), `index.html` (add Generate/Regenerate + progress + 3 examples)
   - Inputs: T-040, `src/render/drawFrame.ts`
   - Outputs: `requestAnimationFrame` loop cycling FrameSpecs at cutsPerSec; progress bar; 3 example prompts load into editor on click

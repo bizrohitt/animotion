@@ -85,3 +85,9 @@
 - Done: Added `src/timeline/buildTimeline.ts` (cuts×duration → FrameSpec[], clamp 4-30/1-5/zoom/blur, frameDur 1000/cuts, tail zoom ramp last 20% 1→zoomMax, blur random, filler 4 lines, no consecutive duplicate via pickLayout). Added `tests/timeline.test.ts` (8 tests) for 24 frames, clamp, zoom monotonic, determinism, no-repeat, duration, blur bounds. 88 tests pass.
 - Next: T-041 animated preview + progress + examples.
 - Bugs: none.
+
+## S15 — 2026-10-04 — T-041 animated preview
+- Done: Added `src/ui/progress.ts` (setProgress, createProgress) and `src/ui/examples.ts` (3 prompts: TACO again, NEWS, SALE). Updated `index.html` (Generate/Regenerate buttons, progressWrap, examples div) and `src/main.ts` (109 lines: buildTimeline, rAF loop at cutsPerSec, progress via setProgress, example pick loads phrase, Generate/Regenerate reseed, "/" focus, ensureFontsLoaded). Preview cycles FrameSpecs at 12fps, progress 0→100%.
+- Verified: example click loads ==phrase, Generate rebuilds+animates, Regenerate re-seeds, progress reflects idx, lint/tsc/build/test/lines OK.
+- Next: T-050 Web Audio primitives.
+- Bugs: none.
