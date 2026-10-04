@@ -129,7 +129,7 @@ Legend: `ID` — `Phase` — `Status`
   - Outputs: `encodeWebM(frames, audioBuffer, dims, onProgress) -> Blob` via canvas.captureStream + MediaRecorder; feature-detect
   - Acceptance: on browsers with MediaRecorder, produces `video/webm` Blob >0 bytes; on unsupported, returns clear error; no ffmpeg
 
-- [ ] **T-061 — MP4 encoder (WebCodecs + mp4-muxer)**
+- [x] **T-061 — MP4 encoder (WebCodecs + mp4-muxer)**
   - Files: `src/encode/mp4Encoder.ts`, `src/encode/pickEncoder.ts` (complete)
   - Inputs: T-060, `src/types.ts`
   - Outputs: `encodeMP4(frames, audioBuffer, dims, onProgress) -> Blob` feeding VideoFrame + AudioData to VideoEncoder/AudioEncoder then mp4-muxer; verify mp4-muxer license is MIT

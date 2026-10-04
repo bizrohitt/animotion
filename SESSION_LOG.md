@@ -111,3 +111,8 @@
 - Done: Added `src/encode/webmEncoder.ts` (canvas.captureStream fps + MediaRecorder VP9/WebM, audio mix via MediaStreamDestination, onProgress) and `src/encode/pickEncoder.ts` stub (WebM only, VideoEncoder check for T-061). Added `tests/webmEncoder.test.ts` (5 tests) for feature-detect false/true, pickEncoder throw/return, encodeWebM throws when unsupported. 110 tests pass.
 - Next: T-061 MP4 encoder (WebCodecs + mp4-muxer).
 - Bugs: none.
+
+## S20 — 2026-10-04 — T-061 MP4 encoder
+- Done: Verified `mp4-muxer` 5.2.2 MIT (`npm view` + docs). Installed mp4-muxer (warn deprecated → mediabunny MPL-2.0 successor documented). Added `src/encode/mp4Encoder.ts` (Muxer+ArrayBufferTarget, VideoEncoder H.264 avc1.4d002a 4Mb, AudioEncoder aac, VideoFrame µs timestamps, flush/finalize → Blob video/mp4). Updated `src/encode/pickEncoder.ts` to prefer MP4 then WebM, with encodeWithFallback. Updated `docs/LICENSES.md` with pinned 5.2.2 MIT and deprecation note. Added `tests/mp4Encoder.test.ts` (6 tests) for isMP4Supported, pick prefers MP4/fallback WebM, throws on unsupported. 116 tests pass.
+- Next: T-062 encoder integration + download.
+- Bugs: none.

@@ -1,7 +1,8 @@
-// src/encode/pickEncoder.ts — choose best encoder (stub for T-060, full at T-061)
+// src/encode/pickEncoder.ts — choose best encoder (MP4 via WebCodecs, fallback WebM)
 
 import type { Timeline, ParsedInput, RenderDims } from '../types.ts';
 import { encodeWebM, isWebMSupported } from './webmEncoder.ts';
+import { encodeMP4, isMP4Supported } from './mp4Encoder.ts';
 
 export type EncodeFn = (
   timeline: Timeline,
@@ -19,7 +20,9 @@ export function isWebCodecsSupported(): boolean {
 }
 
 export function pickEncoder(): { fn: EncodeFn; mimeType: string; ext: string } {
-  // T-060: only WebM available. T-061 will add MP4 via WebCodecs.
+  if (isMP4Supported()) {
+    return { fn: encodeMP4 as unknown as EncodeFn, mimeType: 'video/mp4', ext: 'mp4' };
+  }
   if (isWebMSupported()) {
     return { fn: encodeWebM as unknown as EncodeFn, mimeType: 'video/webm', ext: 'webm' };
   }
