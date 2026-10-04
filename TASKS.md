@@ -27,7 +27,7 @@ Legend: `ID` — `Phase` — `Status`
   - Outputs: LICENSES table with Vite/TS/Vitest/ESLint/Prettier/mp4-muxer (to be verified) entries
   - Acceptance: `docs/LICENSES.md` lists every installed dep with name, version, license, URL; all are permissive (MIT/Apache-2.0/BSD/ISC/OFL/CC0/Unlicense/MPL-2.0 unmodified); no GPL
 
-- [ ] **T-004 — Shared types & config contracts**
+- [x] **T-004 — Shared types & config contracts**
   - Files: `src/types.ts` (full interfaces), `src/config.ts` (constants, limits, presets)
   - Inputs: T-001
   - Outputs: typed contracts for `ParsedInput`, `FrameSpec`, `LayoutPreset`, `PaperStyle`, `HighlightStyle`, `AspectRatio`, `SoundEffect`, `Timeline`, `EncodeResult`, `RNG`, `SupportGate`

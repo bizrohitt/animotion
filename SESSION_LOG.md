@@ -28,3 +28,9 @@
 - Verified: all permissive, no GPL; `npm ls` clean; lint/typecheck/test/lines pass.
 - Next: T-004 shared types & config contracts.
 - Bugs: none.
+
+## S05 — 2026-10-04 — T-004 types & config
+- Done: Completed `src/types.ts` (AspectRatio, VideoFormat, SoundEffect, HighlightStyle, ParsedInput, ParseResult, PaperStyle, LayoutPreset, FrameSpec, Timeline, TimelineOpts, RenderDims, EncodeOpts/Result, RNG, SupportGate, Anchor, AppConfig) and `src/config.ts` (LIMITS, ASPECT_DIMS, VIDEO_FORMATS, SOUND_EFFECTS, HIGHLIGHT_STYLES, FONT_FAMILIES, DEFAULTS, clamp helpers). Added `tests/types.test.ts` (8 tests).
+- Verified: `tsc --noEmit`, `eslint`, `prettier --check`, `vitest` (9 tests), `check-lines` all pass; no circular imports.
+- Next: T-010 parser `==word==` with validation.
+- Bugs: none.
