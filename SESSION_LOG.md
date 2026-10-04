@@ -121,3 +121,8 @@
 - Done: Wired Generate→timeline→mixdown→pickEncoder→Blob→download. Updated `index.html` (Download button), `src/ui/download.ts` (triggerDownload+filename), `src/main.ts` (136 lines, full export at 1080×1920 via encodeWithFallback, progress 0→100, revoke URL, error handling). Build 50.86kB (mp4-muxer included), preview downscaled, export full-res.
 - Next: T-070 phrase input polish + T-071 controls wiring.
 - Bugs: none.
+
+## S22 — 2026-10-04 — T-070 input polish
+- Done: Added `src/ui/form.ts` (updateCounter, validateInput, wrapSelection with toggleMarkers, word-under-cursor, setupForm) and `src/ui/shortcuts.ts` ("/" focus). Updated `index.html` (Highlight selection button) and `src/main.ts` (96 lines, uses form/shortcuts, wraps selection, counter red >23, "/" focus). Counter accurate, wrap/unwrap via selection.
+- Next: T-071 controls wiring (aspect, format, sound, cuts/s, zoom, blur).
+- Bugs: none.

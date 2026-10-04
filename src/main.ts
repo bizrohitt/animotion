@@ -7,7 +7,9 @@ import { renderExamples } from './ui/examples.ts';
 import { triggerDownload, filenameFor } from './ui/download.ts';
 import { mixdown } from './audio/mixdown.ts';
 import { encodeWithFallback } from './encode/pickEncoder.ts';
-import { ASPECT_DIMS, DEFAULTS, LIMITS } from './config.ts';
+import { updateCounter, wrapSelection } from './ui/form.ts';
+import { setupShortcuts } from './ui/shortcuts.ts';
+import { ASPECT_DIMS, DEFAULTS } from './config.ts';
 import type { Timeline } from './types.ts';
 
 const input = document.getElementById('phraseInput') as HTMLInputElement | null;
@@ -19,6 +21,7 @@ const progressWrap = document.getElementById('progressWrap') as HTMLElement | nu
 const btnGen = document.getElementById('btnGenerate') as HTMLButtonElement | null;
 const btnReg = document.getElementById('btnRegenerate') as HTMLButtonElement | null;
 const btnDl = document.getElementById('btnDownload') as HTMLButtonElement | null;
+const btnHi = document.getElementById('btnHighlight') as HTMLButtonElement | null;
 const exWrap = document.getElementById('examples') as HTMLElement | null;
 
 const dims = ASPECT_DIMS['9:16'];
@@ -29,22 +32,14 @@ if (canvas) {
 let seed = DEFAULTS.seed;
 let timeline: Timeline = [];
 let parsed: import('./types.ts').ParsedInput | null = null;
-let raf = 0;
-let startMs = 0;
-
+let raf = 0,
+  startMs = 0;
 const progressEl = document.createElement('div');
 progressEl.style.height = '6px';
 progressEl.style.background = '#111';
 progressEl.style.width = '0%';
 if (progressWrap) progressWrap.appendChild(progressEl);
 
-function updateCounter(raw: string): void {
-  if (!counter) return;
-  const r = parseInput(raw);
-  const n = r.ok ? r.parsed.focalWord.length : 0;
-  counter.textContent = `${n}/${LIMITS.focalMaxChars}`;
-  counter.style.color = n > LIMITS.focalMaxChars ? 'crimson' : '';
-}
 function showPlaceholder(msg: string): void {
   if (!ctx || !canvas) return;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -92,8 +87,8 @@ function startLoop(): void {
   raf = requestAnimationFrame(loop);
 }
 async function onGenerate(): Promise<void> {
-  if (!input) return;
-  updateCounter(input.value);
+  if (!input || !counter) return;
+  updateCounter(input, counter);
   if (await build(input.value)) startLoop();
 }
 async function onDownload(): Promise<void> {
@@ -126,16 +121,16 @@ async function onDownload(): Promise<void> {
   }
 }
 function init(): void {
-  if (!input || !ctx) return;
+  if (!input || !ctx || !counter) return;
   input.value = 'Markets jittery. ==TACO again==.';
   if (exWrap)
     renderExamples(exWrap, (t) => {
       input.value = t;
       void onGenerate();
     });
-  updateCounter(input.value);
+  updateCounter(input, counter);
   void onGenerate();
-  input.addEventListener('input', () => updateCounter(input.value));
+  input.addEventListener('input', () => updateCounter(input, counter));
   btnGen?.addEventListener('click', () => {
     seed = (seed + 1) >>> 0;
     void onGenerate();
@@ -145,11 +140,11 @@ function init(): void {
     void onGenerate();
   });
   btnDl?.addEventListener('click', () => void onDownload());
-  document.addEventListener('keydown', (e) => {
-    if (e.key === '/' && !(e.target instanceof HTMLInputElement)) {
-      e.preventDefault();
-      input.focus();
-    }
+  btnHi?.addEventListener('click', () => {
+    wrapSelection(input);
+    updateCounter(input, counter);
+    void onGenerate();
   });
+  setupShortcuts(input);
 }
 init();

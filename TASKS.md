@@ -143,7 +143,7 @@ Legend: `ID` — `Phase` — `Status`
 
 ## P7 — Full Controls
 
-- [ ] **T-070 — Phrase input polish (== syntax, word-select, "/" focus, counter)**
+- [x] **T-070 — Phrase input polish (== syntax, word-select, "/" focus, counter)**
   - Files: `src/ui/form.ts`, `src/ui/shortcuts.ts`, `index.html`
   - Inputs: `src/parser/parseInput.ts`
   - Outputs: input highlights `==word==` region, select-word wraps with `==`, "/" focuses input, "x/23" counter turns red when over, validation message
