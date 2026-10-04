@@ -131,3 +131,8 @@
 - Done: Extended `src/ui/form.ts` with getControls/setupControls (reads aspect/format/sound/cuts/zoom/blur, clamps 4-30/1.0-3.0/0-3, resizes preview canvas). Updated `index.html` with fieldsets for aspect, format, sound on/off+effect, cuts/s, zoom, blur sliders + live values. Rewrote `src/main.ts` to 90 lines using getControls for preview (cuts, aspect) and download (format preference with fallback, sound, full-res dims, fps). Values persist via getControls at build/encode time.
 - Next: T-072 SupportGate + T-080 functional freeze.
 - Bugs: none.
+
+## S24 — 2026-10-04 — T-072 SupportGate
+- Done: Added `src/gate/SupportGate.ts` (NoopGate disabled by default, render/on/off no-ops, enable/disable, singleton supportGate, isGateNoop). Added `tests/gate.test.ts` (5 tests) for disabled renders nothing, enabled placeholder, on/off no-ops, singleton, enable/disable. 121 tests pass, no network, no tracking.
+- Next: T-080 functional freeze QA + T-090 styling.
+- Bugs: none.

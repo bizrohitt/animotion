@@ -155,7 +155,7 @@ Legend: `ID` — `Phase` — `Status`
   - Outputs: aspect 9:16/1:1/16:9 (1080×1920/1080×1080/1920×1080), format MP4/WebM, sound on/off + effect select, cuts/s 4-30, zoom 1.0-3.0, blur 0-3
   - Acceptance: changing aspect resizes preview & export dims; format pick respects fallback (WebM if MP4 unsupported); sliders clamp to ranges; values persist in timeline/encode
 
-- [ ] **T-072 — SupportGate (no-op, disabled by default)**
+- [x] **T-072 — SupportGate (no-op, disabled by default)**
   - Files: `src/gate/SupportGate.ts`, `tests/gate.test.ts`
   - Inputs: `src/types.ts`
   - Outputs: interface `SupportGate { enabled: boolean; render(container): void; on(event): void }` with `NoopGate` default; never shows without opt-in
