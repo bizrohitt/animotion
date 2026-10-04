@@ -6,10 +6,15 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',
     port: 5173,
+    // @ts-ignore — allow preview proxy host (e2b.app)
+    allowedHosts: true as unknown as string[],
+    headers: { 'X-Frame-Options': 'ALLOWALL' },
   },
   preview: {
     host: '0.0.0.0',
     port: 4173,
+    // @ts-ignore
+    allowedHosts: true as unknown as string[],
   },
   appType: 'mpa',
   build: {
