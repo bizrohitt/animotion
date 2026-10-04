@@ -103,7 +103,7 @@ Legend: `ID` — `Phase` — `Status`
 
 ## P5 — Audio Synthesis + Mixdown
 
-- [ ] **T-050 — Web Audio primitives**
+- [x] **T-050 — Web Audio primitives**
   - Files: `src/audio/synth.ts`, `tests/synth.test.ts`
   - Inputs: `src/types.ts`
   - Outputs: `makeNoiseBuffer(ctx, type)`, `envelope(gain, attack, decay)`, `filteredNoise(ctx, freq, Q)`

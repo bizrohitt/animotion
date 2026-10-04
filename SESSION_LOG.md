@@ -91,3 +91,8 @@
 - Verified: example click loads ==phrase, Generate rebuilds+animates, Regenerate re-seeds, progress reflects idx, lint/tsc/build/test/lines OK.
 - Next: T-050 Web Audio primitives.
 - Bugs: none.
+
+## S16 — 2026-10-04 — T-050 synth primitives
+- Done: Added `src/audio/synth.ts` (makeNoiseBuffer seeded, envelope with linear+exp to 0.001, filteredNoise, sineBlip) and `tests/synth.test.ts` (4 tests) for non-silent buffer, determinism, envelope automation not zero, param variation. No external samples.
+- Next: T-051 six sound effects (synthesized).
+- Bugs: none.
