@@ -55,7 +55,7 @@ Legend: `ID` — `Phase` — `Status`
   - Outputs: `LAYOUT_PRESETS[]` (fontFamily, paperStyle, rotation range, highlightStyle pool), `FILLER_SENTENCES[]` / word bank, font list (OFL: Playfair Display, Libre Baskerville, Old Standard TT, Special Elite, IM Fell, Courier Prime + fallbacks)
   - Acceptance: ≥6 distinct layout presets, ≥20 filler sentences; each references only OFL/system fonts; no preset duplicates consecutively (enforced in engine, not here); lint pass
 
-- [ ] **T-021 — Seeded PRNG + layout engine (no-repeat, anchor math)**
+- [x] **T-021 — Seeded PRNG + layout engine (no-repeat, anchor math)**
   - Files: `src/layout/layoutEngine.ts`, `tests/layout.test.ts`
   - Inputs: T-020, `src/types.ts`
   - Outputs: `mulberry32`/`xoshiro`-style PRNG, `pickLayout(rng, prevId)`, `computeAnchorOffset(focalWord, frameWidth, ...)` using `measureText` mock in tests

@@ -52,3 +52,9 @@
 - Verified: 8 presets (≥6), 32 sentences (≥20), only OFL fonts, `eslint`+`tsc`+`check-lines` OK, build OK.
 - Next: T-021 seeded PRNG + layout engine (no-repeat, anchor math).
 - Bugs: none.
+
+## S09 — 2026-10-04 — T-021 PRNG + layout engine
+- Done: Added `layoutEngine.ts` with `createRNG` (mulberry32), `pickLayout` (no consecutive repeat, guard 10), `randomRotation`, `computeAnchorX`/`computeAnchor`/`focalCenterAtOrigin`. Added `tests/layout.test.ts` (11 tests) for determinism, range, no-repeat 100x, anchor within 0.5px for 4 cases + variable measure.
+- Verified: deterministic seeded, rotation in range, anchor pinned, lint/tsc/test/lines OK.
+- Next: T-022 filler text generator.
+- Bugs: none.
