@@ -34,3 +34,9 @@
 - Verified: `tsc --noEmit`, `eslint`, `prettier --check`, `vitest` (9 tests), `check-lines` all pass; no circular imports.
 - Next: T-010 parser `==word==` with validation.
 - Bugs: none.
+
+## S06 — 2026-10-04 — T-010 parser
+- Done: Implemented `src/parser/parseInput.ts` (markerCount==2, trim, 23-char limit, focalStart/End, helpers wrap/unwrap/getFocalLength). Added `tests/parser.test.ts` with 21 tests covering no-marker, multi-marker, empty, >23, whitespace, unicode, exact 23, edge unwraps. All 30 tests pass.
+- Verified: `eslint`, `tsc --noEmit`, `prettier --check`, `vitest`, `check-lines` OK; branch coverage high.
+- Next: T-011 parser edge cases & helper exports (wrap/unwrap already exposed, add word-select helper if needed).
+- Bugs: none.

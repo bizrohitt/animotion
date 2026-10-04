@@ -35,7 +35,7 @@ Legend: `ID` — `Phase` — `Status`
 
 ## P1 — Parser and Types
 
-- [ ] **T-010 — `==word==` parser + validation**
+- [x] **T-010 — `==word==` parser + validation**
   - Files: `src/parser/parseInput.ts`, `tests/parser.test.ts`
   - Inputs: `src/types.ts`, `src/config.ts`
   - Outputs: `parseInput(raw: string) -> { ok, parsed?, error? }` handling single `==word==`, trimming, 23-char focal limit, plain phrase fallback
