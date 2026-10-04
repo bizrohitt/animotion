@@ -61,7 +61,7 @@ Legend: `ID` — `Phase` — `Status`
   - Outputs: `mulberry32`/`xoshiro`-style PRNG, `pickLayout(rng, prevId)`, `computeAnchorOffset(focalWord, frameWidth, ...)` using `measureText` mock in tests
   - Acceptance: seeded sequence deterministic; never returns same preset twice in a row (100 iterations); anchor offset keeps focal word centre at (cx,cy) within 0.5px in tests
 
-- [ ] **T-022 — Filler text generator**
+- [x] **T-022 — Filler text generator**
   - Files: `src/layout/fillerText.ts` (generator), `tests/filler.test.ts`
   - Inputs: T-020
   - Outputs: `generateFillerLines(rng, count, avgWords)` → string[]; wraps at canvas width via measure

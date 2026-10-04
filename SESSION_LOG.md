@@ -58,3 +58,8 @@
 - Verified: deterministic seeded, rotation in range, anchor pinned, lint/tsc/test/lines OK.
 - Next: T-022 filler text generator.
 - Bugs: none.
+
+## S10 — 2026-10-04 — T-022 filler generator
+- Done: Extended `fillerText.ts` with `generateFillerLines(rng,count,avgWords)` (sentence mode or synthetic words, no consecutive repeat, ±2 word count). Added `tests/filler.test.ts` (7 tests) for count, determinism, no-repeat (20/30), word count ±2, zero handling, bank check, seed variance. All 56 tests pass.
+- Next: T-030 procedural paper + highlight styles.
+- Bugs: none.

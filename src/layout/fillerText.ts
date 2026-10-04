@@ -1,5 +1,6 @@
-// src/layout/fillerText.ts — filler sentences and word bank (data for T-020)
-// Generator logic in T-022; this file is data only to respect 600-line limit.
+// src/layout/fillerText.ts — filler sentences, word bank, and generator
+
+import type { RNG } from '../types.ts';
 
 export const FILLER_SENTENCES: string[] = [
   'Markets closed higher on steady volume.',
@@ -68,3 +69,48 @@ export const SAMPLE_PHRASES: string[] = [
   'Extra edition now on sale.',
   'Daily bulletin for subscribers.',
 ];
+
+/**
+ * Generate filler lines deterministically via RNG.
+ * - No line repeats consecutively within the returned array.
+ * - If avgWords provided, each line will have word count within ±2 of it.
+ * - If avgWords omitted, each line is a random sentence from FILLER_SENTENCES.
+ */
+export function generateFillerLines(rng: RNG, count: number, avgWords?: number): string[] {
+  if (count <= 0) return [];
+  const out: string[] = [];
+  let prev = '';
+  for (let i = 0; i < count; i++) {
+    let line: string;
+    if (avgWords !== undefined) {
+      const target = Math.max(3, avgWords + (rng.nextInt(5) - 2)); // ±2
+      const words: string[] = [];
+      while (words.length < target) {
+        const w = FILLER_WORDS[rng.nextInt(FILLER_WORDS.length)];
+        words.push(w);
+      }
+      // capitalize first
+      words[0] = words[0].charAt(0).toUpperCase() + words[0].slice(1);
+      line = words.join(' ') + '.';
+      // avoid repeat
+      let guard = 0;
+      while (line === prev && guard < 10) {
+        // mutate last word
+        words[words.length - 1] = FILLER_WORDS[rng.nextInt(FILLER_WORDS.length)];
+        line = words.join(' ') + '.';
+        if (words[0]) words[0] = words[0].charAt(0).toUpperCase() + words[0].slice(1);
+        guard++;
+      }
+    } else {
+      let guard = 0;
+      do {
+        const idx = rng.nextInt(FILLER_SENTENCES.length);
+        line = FILLER_SENTENCES[idx];
+        guard++;
+      } while (line === prev && guard < 20);
+    }
+    out.push(line);
+    prev = line;
+  }
+  return out;
+}
