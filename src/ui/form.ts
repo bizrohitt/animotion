@@ -79,6 +79,7 @@ export function getControls(): AppConfig {
   const cuts = Number((document.getElementById('cutsInput') as HTMLInputElement | null)?.value);
   const zoom = Number((document.getElementById('zoomInput') as HTMLInputElement | null)?.value);
   const blur = Number((document.getElementById('blurInput') as HTMLInputElement | null)?.value);
+  const lockedFont = (document.getElementById('fontSelect') as HTMLSelectElement | null)?.value;
   return {
     aspect: aspect ?? DEFAULTS.aspect,
     format: format ?? DEFAULTS.format,
@@ -94,6 +95,7 @@ export function getControls(): AppConfig {
       ? Math.max(LIMITS.blur.min, Math.min(LIMITS.blur.max, blur))
       : DEFAULTS.blurMax,
     durationSec: DEFAULTS.durationSec,
+    lockedFont: lockedFont ?? DEFAULTS.lockedFont,
   };
 }
 
@@ -106,6 +108,7 @@ export function setupControls(onChange: () => void): void {
     'cutsInput',
     'zoomInput',
     'blurInput',
+    'fontSelect',
   ];
   for (const id of ids) {
     const el = document.getElementById(id);

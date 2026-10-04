@@ -75,6 +75,9 @@ async function build(raw: string): Promise<boolean> {
     blurMax: c.blurMax,
     seed,
   });
+  if (c.lockedFont && c.lockedFont !== 'auto') {
+    timeline = timeline.map((f) => ({ ...f, fontFamily: c.lockedFont }));
+  }
   await ensureFontsLoaded([...new Set(timeline.map((f) => f.fontFamily))]);
   return true;
 }

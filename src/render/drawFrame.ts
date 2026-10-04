@@ -110,8 +110,20 @@ export function drawFrame(
   };
   drawHighlight(ctx, correctedBBox, spec.highlightStyle);
 
-  // main phrase
-  ctx.fillStyle = '#111';
+  // ink bleed: faint offset copy for press impression
+  ctx.save();
+  ctx.fillStyle = 'rgba(17,17,17,0.10)';
+  ctx.font = font;
+  ctx.textBaseline = 'middle';
+  ctx.fillText(parsed.fullPhrase, originX + 0.6, originY + 0.7);
+  // extra feather via tiny shadow
+  ctx.shadowColor = 'rgba(0,0,0,0.07)';
+  ctx.shadowBlur = 1.5;
+  ctx.fillText(parsed.fullPhrase, originX, originY);
+  ctx.restore();
+
+  // main phrase (crisp)
+  ctx.fillStyle = '#0f0f0f';
   ctx.font = font;
   ctx.textBaseline = 'middle';
   ctx.fillText(parsed.fullPhrase, originX, originY);

@@ -52,6 +52,7 @@ export const DEFAULTS = {
   blurMax: 0,
   durationSec: 2,
   seed: 0x12345678,
+  lockedFont: 'auto' as string,
 } as const;
 
 export function clampCutsPerSec(n: number): number {

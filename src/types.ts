@@ -108,4 +108,5 @@ export interface AppConfig {
   zoomMax: number;
   blurMax: number;
   durationSec: number;
+  lockedFont: string; // 'auto' or exact fontFamily from presets
 }
