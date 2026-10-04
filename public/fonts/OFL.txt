@@ -1,0 +1,5 @@
+SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
+This license applies to OFL fonts used in this project (Playfair Display, Libre Baskerville, Old Standard TT, Special Elite, IM Fell English, Courier Prime).
+Full text: https://scripts.sil.org/OFL
+Fonts are self-hosted under public/fonts/ and attributed in docs/LICENSES.md.
+Placeholder — actual OFL.txt from each font will be copied when fonts are added (T-020).

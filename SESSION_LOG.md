@@ -22,3 +22,9 @@
 - Decisions: globals browser+node, no-console off, no-empty off, scripts override no-undef; prettier 100col, singleQuote.
 - Next: T-003 docs/LICENSES audit + T-004 types/config contracts.
 - Bugs: none.
+
+## S04 — 2026-10-04 — T-003 docs/LICENSES
+- Done: Audited installed deps (Vite 8.3.2 MIT, TS 5.9.2 Apache-2.0, ESLint 10.12 MIT, Prettier 3.9.9 MIT, Vitest 5.0.3 MIT, @eslint/js 10.0.1 MIT, typescript-eslint 8.71 MIT, globals 17.13 MIT). Updated `docs/LICENSES.md` with pinned versions, URLs, checklist. Added `public/fonts/OFL.txt` placeholder.
+- Verified: all permissive, no GPL; `npm ls` clean; lint/typecheck/test/lines pass.
+- Next: T-004 shared types & config contracts.
+- Bugs: none.

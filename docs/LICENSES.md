@@ -10,35 +10,45 @@
 | -------------------------- | ------- | ------- | --------- |
 | MatchCutter (this project) | —       | MIT     | ./LICENSE |
 
-## Runtime Dependencies (to be verified before install)
+## Build & Language
 
-| Name                                    | Version         | License      | URL                                     | Notes                                                                           |
-| --------------------------------------- | --------------- | ------------ | --------------------------------------- | ------------------------------------------------------------------------------- |
-| `mp4-muxer` (or successor `mediabunny`) | TBD (pin exact) | MIT (verify) | https://github.com/Vanilagy/mp4-muxer   | Verify license is MIT at install time; fallback is `mediabunny` (MIT) if needed |
-| Vite                                    | TBD             | MIT          | https://github.com/vitejs/vite          | Build tool                                                                      |
-| TypeScript                              | TBD             | Apache-2.0   | https://github.com/microsoft/TypeScript | Strict mode                                                                     |
+| Name       | Version | License    | URL                                     | Notes         |
+| ---------- | ------- | ---------- | --------------------------------------- | ------------- |
+| Vite       | 8.3.2   | MIT        | https://github.com/vitejs/vite          | Build tool    |
+| TypeScript | 5.9.2   | Apache-2.0 | https://github.com/microsoft/TypeScript | `strict:true` |
 
-## Dev Dependencies (to be verified)
+## Dev Dependencies (lint / format / test)
 
-| Name                 | Version | License | URL                                                    |
-| -------------------- | ------- | ------- | ------------------------------------------------------ |
-| Vitest               | TBD     | MIT     | https://github.com/vitest-dev/vitest                   |
-| ESLint               | TBD     | MIT     | https://github.com/eslint/eslint                       |
-| Prettier             | TBD     | MIT     | https://github.com/prettier/prettier                   |
-| @typescript-eslint/* | TBD     | MIT     | https://github.com/typescript-eslint/typescript-eslint |
+| Name                             | Version | License | URL                                                    |
+| -------------------------------- | ------- | ------- | ------------------------------------------------------ |
+| Vitest                           | 5.0.3   | MIT     | https://github.com/vitest-dev/vitest                   |
+| ESLint                           | 10.12.0 | MIT     | https://github.com/eslint/eslint                       |
+| @eslint/js                       | 10.0.1  | MIT     | https://github.com/eslint/eslint                       |
+| typescript-eslint                | 8.71.0  | MIT     | https://github.com/typescript-eslint/typescript-eslint |
+| @typescript-eslint/parser        | 8.71.0  | MIT     | https://github.com/typescript-eslint/typescript-eslint |
+| @typescript-eslint/eslint-plugin | 8.71.0  | MIT     | https://github.com/typescript-eslint/typescript-eslint |
+| eslint-config-prettier           | 10.1.8  | MIT     | https://github.com/prettier/eslint-config-prettier     |
+| Prettier                         | 3.9.9   | MIT     | https://github.com/prettier/prettier                   |
+| globals                          | 17.13.0 | MIT     | https://github.com/sindresorhus/globals                |
+
+## Runtime Encoding (to be verified at T-061)
+
+| Name                                    | Version         | License      | URL                                   | Notes                                                                             |
+| --------------------------------------- | --------------- | ------------ | ------------------------------------- | --------------------------------------------------------------------------------- |
+| `mp4-muxer` (or successor `mediabunny`) | TBD (pin exact) | MIT (verify) | https://github.com/Vanilagy/mp4-muxer | Verify MIT before install; fallback is `mediabunny` (MIT). Do NOT use ffmpeg.wasm |
 
 ## Fonts (self-hosted, OFL only)
 
-| Font              | License     | Source                                              | File                                    |
-| ----------------- | ----------- | --------------------------------------------------- | --------------------------------------- |
-| Playfair Display  | SIL OFL 1.1 | https://fonts.google.com/specimen/Playfair+Display  | `public/fonts/PlayfairDisplay-*.woff2`  |
-| Libre Baskerville | SIL OFL 1.1 | https://fonts.google.com/specimen/Libre+Baskerville | `public/fonts/LibreBaskerville-*.woff2` |
-| Old Standard TT   | SIL OFL 1.1 | https://fonts.google.com/specimen/Old+Standard+TT   | `public/fonts/OldStandardTT-*.woff2`    |
-| Special Elite     | SIL OFL 1.1 | https://fonts.google.com/specimen/Special+Elite     | `public/fonts/SpecialElite-*.woff2`     |
-| IM Fell English   | SIL OFL 1.1 | https://fonts.google.com/specimen/IM+Fell+English   | `public/fonts/IMFellEnglish-*.woff2`    |
-| Courier Prime     | SIL OFL 1.1 | https://fonts.google.com/specimen/Courier+Prime     | `public/fonts/CourierPrime-*.woff2`     |
+| Font              | License     | Source                                              | File                                    | Status  |
+| ----------------- | ----------- | --------------------------------------------------- | --------------------------------------- | ------- |
+| Playfair Display  | SIL OFL 1.1 | https://fonts.google.com/specimen/Playfair+Display  | `public/fonts/PlayfairDisplay-*.woff2`  | Planned |
+| Libre Baskerville | SIL OFL 1.1 | https://fonts.google.com/specimen/Libre+Baskerville | `public/fonts/LibreBaskerville-*.woff2` | Planned |
+| Old Standard TT   | SIL OFL 1.1 | https://fonts.google.com/specimen/Old+Standard+TT   | `public/fonts/OldStandardTT-*.woff2`    | Planned |
+| Special Elite     | SIL OFL 1.1 | https://fonts.google.com/specimen/Special+Elite     | `public/fonts/SpecialElite-*.woff2`     | Planned |
+| IM Fell English   | SIL OFL 1.1 | https://fonts.google.com/specimen/IM+Fell+English   | `public/fonts/IMFellEnglish-*.woff2`    | Planned |
+| Courier Prime     | SIL OFL 1.1 | https://fonts.google.com/specimen/Courier+Prime     | `public/fonts/CourierPrime-*.woff2`     | Planned |
 
-> Keep OFL license text in `public/fonts/OFL.txt` and retain attribution.
+> Keep OFL license text in `public/fonts/OFL.txt` and retain attribution per font.
 
 ## Audio & Textures
 
@@ -49,7 +59,17 @@
 
 ## Verification Checklist
 
-- [ ] `mp4-muxer` license checked at T-061 (must be MIT)
-- [ ] Font OFL texts copied to `public/fonts/`
-- [ ] No GPL/AGPL/LGPL dependency present (`npm ls` + manual check)
-- [ ] All versions pinned and table updated after each `npm install`
+- [x] Installed deps verified — all MIT or Apache-2.0 (no GPL/LGPL/AGPL)
+- [ ] `mp4-muxer`/`mediabunny` license checked at T-061 (must be MIT)
+- [ ] Font OFL texts copied to `public/fonts/OFL.txt` and attributed (at font install)
+- [x] No GPL/AGPL/LGPL dependency present (`npm ls` verified 2026-10-04)
+- [x] All versions pinned and table updated (Vite 8.3.2, TS 5.9.2, ESLint 10.12.0, Prettier 3.9.9, Vitest 5.0.3)
+
+## How to Verify
+
+```sh
+npm view <pkg> license   # or check node_modules/<pkg>/package.json
+npm ls --depth=0
+node scripts/check-lines.mjs
+npm run lint && npm run typecheck && npm test
+```

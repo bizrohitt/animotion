@@ -21,7 +21,7 @@ Legend: `ID` — `Phase` — `Status`
   - Outputs: lint/format/test scripts work; line-check fails on >600-line file
   - Acceptance: `npm run lint`, `npm run format:check`, `npm test`, `node scripts/check-lines.mjs` all pass on clean tree; a 601-line fixture makes check-lines exit 1
 
-- [ ] **T-003 — Docs skeleton + LICENSES verification**
+- [x] **T-003 — Docs skeleton + LICENSES verification**
   - Files: `docs/LICENSES.md`, `LICENSE`, `NOTICE` (if needed), `public/fonts/README.md` (OFL attribution placeholder)
   - Inputs: T-001, T-002
   - Outputs: LICENSES table with Vite/TS/Vitest/ESLint/Prettier/mp4-muxer (to be verified) entries
