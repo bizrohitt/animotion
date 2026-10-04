@@ -74,3 +74,9 @@
 - Done: Added `src/render/zoomBlur.ts` (applyZoom via translate/scale around cx,cy, applyBlur via ctx.filter with guard, resetTransform). Added `tests/zoomBlur.test.ts` (6 tests) for 1.0 no-op, 2.0 scaling, blur 0/2.5, unsupported filter, reset.
 - Next: T-032 drawFrame (anchor-pinned single frame) + minimal preview.
 - Bugs: none.
+
+## S13 — 2026-10-04 — T-032 drawFrame + preview
+- Done: Added `src/render/drawFrame.ts` (paper+zoom/rotate, anchor via computeAnchorX, filler, highlight, main text, fontSize 6% width). Updated `index.html` (input 360px, counter, 540x960 canvas) and `src/main.ts` (96 lines, parse, RNG, pickLayout, filler, ensureFontsLoaded, drawFrame, input/counter/Enter reseed, "/" focus). Added `tests/drawFrame.test.ts` (10 tests) for 3 aspects ×3 presets anchor within 1px + filler.
+- Verified: await fonts.ready, focal within 1px for 9 combos, zero network, vite build 10kB, main.ts <150, lint/tsc/test/lines OK.
+- Next: T-040 timeline builder.
+- Bugs: none.

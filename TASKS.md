@@ -81,7 +81,7 @@ Legend: `ID` — `Phase` — `Status`
   - Outputs: `applyZoom(ctx, zoom, cx, cy)`, `applyBlur(ctx, blur)` (`ctx.filter = blur(Npx)` with fallback)
   - Acceptance: zoom 1.0 is identity; 2.0 scales 2× around anchor; blur 0 is no-op; perf: no throw when `filter` unsupported
 
-- [ ] **T-032 — drawFrame (anchor-pinned single frame) + minimal preview**
+- [x] **T-032 — drawFrame (anchor-pinned single frame) + minimal preview**
   - Files: `src/render/drawFrame.ts`, `src/main.ts` (<150 lines), `index.html` (unstyled controls: input + canvas), `tests/drawFrame.test.ts` (anchor math)
   - Inputs: T-030, T-031, `src/layout/layoutEngine.ts`
   - Outputs: `drawFrame(ctx, spec, parsed, dims)` pins focal word centre to (cx,cy) at fixed size; preview canvas shows one frame on input change

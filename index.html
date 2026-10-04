@@ -12,9 +12,24 @@
   <body>
     <main>
       <h1>MatchCutter</h1>
-      <p>
-        Browser-only text match cut generator — scaffolding. App loads via <code>src/main.ts</code>.
-      </p>
+      <p>Wrap one word with <code>==word==</code>. Max 23 chars focal.</p>
+      <label
+        >Phrase:
+        <input
+          id="phraseInput"
+          type="text"
+          placeholder="Markets jittery. ==TACO again==."
+          style="width: 360px"
+        />
+        <span id="charCounter">0/23</span>
+      </label>
+      <div id="error" style="color: crimson; min-height: 1.2em"></div>
+      <canvas
+        id="preview"
+        width="540"
+        height="960"
+        style="border: 1px solid #ccc; max-width: 360px; width: 100%; background: #fff"
+      ></canvas>
       <div id="app"></div>
     </main>
     <script type="module" src="/src/main.ts"></script>
