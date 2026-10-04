@@ -6,8 +6,9 @@ import { setProgress } from './ui/progress.ts';
 import { renderExamples } from './ui/examples.ts';
 import { triggerDownload, filenameFor } from './ui/download.ts';
 import { mixdown } from './audio/mixdown.ts';
-import { encodeWithFallback } from './encode/pickEncoder.ts';
-import { updateCounter, wrapSelection } from './ui/form.ts';
+import { encodeWebM } from './encode/webmEncoder.ts';
+import { encodeMP4 } from './encode/mp4Encoder.ts';
+import { updateCounter, wrapSelection, getControls, setupControls } from './ui/form.ts';
 import { setupShortcuts } from './ui/shortcuts.ts';
 import { ASPECT_DIMS, DEFAULTS } from './config.ts';
 import type { Timeline } from './types.ts';
@@ -24,15 +25,15 @@ const btnDl = document.getElementById('btnDownload') as HTMLButtonElement | null
 const btnHi = document.getElementById('btnHighlight') as HTMLButtonElement | null;
 const exWrap = document.getElementById('examples') as HTMLElement | null;
 
-const dims = ASPECT_DIMS['9:16'];
 if (canvas) {
-  canvas.width = dims.width / 2;
-  canvas.height = dims.height / 2;
+  const d = ASPECT_DIMS[DEFAULTS.aspect];
+  canvas.width = d.width / 2;
+  canvas.height = d.height / 2;
 }
-let seed = DEFAULTS.seed;
-let timeline: Timeline = [];
-let parsed: import('./types.ts').ParsedInput | null = null;
-let raf = 0,
+let seed = DEFAULTS.seed,
+  timeline: Timeline = [],
+  parsed: import('./types.ts').ParsedInput | null = null,
+  raf = 0,
   startMs = 0;
 const progressEl = document.createElement('div');
 progressEl.style.height = '6px';
@@ -59,11 +60,12 @@ async function build(raw: string): Promise<boolean> {
   }
   if (errEl) errEl.textContent = '';
   parsed = res.parsed;
+  const c = getControls();
   timeline = buildTimeline(parsed, {
-    cutsPerSec: DEFAULTS.cutsPerSec,
-    durationSec: DEFAULTS.durationSec,
-    zoomMax: DEFAULTS.zoomMax,
-    blurMax: DEFAULTS.blurMax,
+    cutsPerSec: c.cutsPerSec,
+    durationSec: c.durationSec,
+    zoomMax: c.zoomMax,
+    blurMax: c.blurMax,
     seed,
   });
   await ensureFontsLoaded([...new Set(timeline.map((f) => f.fontFamily))]);
@@ -72,11 +74,12 @@ async function build(raw: string): Promise<boolean> {
 function loop(now: number): void {
   if (!ctx || !canvas || timeline.length === 0 || !parsed) return;
   if (startMs === 0) startMs = now;
-  const idx = Math.floor((now - startMs) / (1000 / DEFAULTS.cutsPerSec)) % timeline.length;
+  const c = getControls();
+  const idx = Math.floor((now - startMs) / (1000 / c.cutsPerSec)) % timeline.length;
   drawFrame(ctx, timeline[idx], parsed, {
     width: canvas.width,
     height: canvas.height,
-    aspect: '9:16',
+    aspect: c.aspect,
   });
   setProgress(progressEl, (idx + 1) / timeline.length);
   raf = requestAnimationFrame(loop);
@@ -100,16 +103,31 @@ async function onDownload(): Promise<void> {
   try {
     setProgress(progressEl, 0);
     if (errEl) errEl.textContent = 'Mixing audio...';
-    const audioBuf = await mixdown(timeline, DEFAULTS.soundEnabled ? DEFAULTS.soundEffect : 'none');
+    const c = getControls();
+    const audioBuf = await mixdown(timeline, c.soundEnabled ? c.soundEffect : 'none');
     if (errEl) errEl.textContent = 'Encoding video...';
-    const d = ASPECT_DIMS[DEFAULTS.aspect];
-    const fullDims = { width: d.width, height: d.height, aspect: DEFAULTS.aspect } as const;
-    const { blob, ext } = await encodeWithFallback(timeline, parsed, {
-      dims: fullDims,
-      fps: DEFAULTS.cutsPerSec,
-      audioBuffer: audioBuf,
-      onProgress: (r) => setProgress(progressEl, r),
-    });
+    const d = ASPECT_DIMS[c.aspect];
+    const fullDims = { width: d.width, height: d.height, aspect: c.aspect } as const;
+    const encode = c.format === 'webm' ? encodeWebM : encodeMP4;
+    let blob: Blob;
+    let ext = c.format;
+    try {
+      blob = await encode(timeline, parsed, {
+        dims: fullDims,
+        fps: c.cutsPerSec,
+        audioBuffer: audioBuf,
+        onProgress: (r) => setProgress(progressEl, r),
+      });
+    } catch {
+      const fallback = c.format === 'mp4' ? encodeWebM : encodeMP4;
+      blob = await fallback(timeline, parsed, {
+        dims: fullDims,
+        fps: c.cutsPerSec,
+        audioBuffer: audioBuf,
+        onProgress: (r) => setProgress(progressEl, r),
+      });
+      ext = c.format === 'mp4' ? 'webm' : 'mp4';
+    }
     triggerDownload(blob, filenameFor(ext));
     if (errEl)
       errEl.textContent = `Downloaded ${ext.toUpperCase()} (${Math.round(blob.size / 1024)} KB)`;
@@ -146,5 +164,6 @@ function init(): void {
     void onGenerate();
   });
   setupShortcuts(input);
+  setupControls(() => void onGenerate());
 }
 init();

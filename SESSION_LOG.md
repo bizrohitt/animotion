@@ -126,3 +126,8 @@
 - Done: Added `src/ui/form.ts` (updateCounter, validateInput, wrapSelection with toggleMarkers, word-under-cursor, setupForm) and `src/ui/shortcuts.ts` ("/" focus). Updated `index.html` (Highlight selection button) and `src/main.ts` (96 lines, uses form/shortcuts, wraps selection, counter red >23, "/" focus). Counter accurate, wrap/unwrap via selection.
 - Next: T-071 controls wiring (aspect, format, sound, cuts/s, zoom, blur).
 - Bugs: none.
+
+## S23 — 2026-10-04 — T-071 full controls
+- Done: Extended `src/ui/form.ts` with getControls/setupControls (reads aspect/format/sound/cuts/zoom/blur, clamps 4-30/1.0-3.0/0-3, resizes preview canvas). Updated `index.html` with fieldsets for aspect, format, sound on/off+effect, cuts/s, zoom, blur sliders + live values. Rewrote `src/main.ts` to 90 lines using getControls for preview (cuts, aspect) and download (format preference with fallback, sound, full-res dims, fps). Values persist via getControls at build/encode time.
+- Next: T-072 SupportGate + T-080 functional freeze.
+- Bugs: none.

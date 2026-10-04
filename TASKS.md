@@ -149,7 +149,7 @@ Legend: `ID` — `Phase` — `Status`
   - Outputs: input highlights `==word==` region, select-word wraps with `==`, "/" focuses input, "x/23" counter turns red when over, validation message
   - Acceptance: typing `==word==` shows highlighted token; selecting a word and pressing button wraps it; "/" focuses from anywhere except when typing; counter accurate
 
-- [ ] **T-071 — Controls wiring (aspect, format, sound, advanced)**
+- [x] **T-071 — Controls wiring (aspect, format, sound, advanced)**
   - Files: `src/ui/form.ts`, `src/config.ts`, `src/main.ts`, `index.html`
   - Inputs: T-062
   - Outputs: aspect 9:16/1:1/16:9 (1080×1920/1080×1080/1920×1080), format MP4/WebM, sound on/off + effect select, cuts/s 4-30, zoom 1.0-3.0, blur 0-3

@@ -1,7 +1,8 @@
-// src/ui/form.ts — phrase input polish
+// src/ui/form.ts — phrase input polish + controls wiring
 
 import { parseInput, toggleMarkers } from '../parser/parseInput.ts';
-import { LIMITS } from '../config.ts';
+import { LIMITS, DEFAULTS, ASPECT_DIMS } from '../config.ts';
+import type { AspectRatio, SoundEffect, VideoFormat, AppConfig } from '../types.ts';
 
 export function updateCounter(input: HTMLInputElement, counter: HTMLElement): void {
   const res = parseInput(input.value);
@@ -65,4 +66,77 @@ export function setupForm(
     onChange(input.value);
   };
   input.addEventListener('input', onInput);
+}
+
+export function getControls(): AppConfig {
+  const aspect = (document.getElementById('aspectSelect') as HTMLSelectElement | null)?.value as
+    AspectRatio | undefined;
+  const format = (document.getElementById('formatSelect') as HTMLSelectElement | null)?.value as
+    VideoFormat | undefined;
+  const soundEnabled = (document.getElementById('soundToggle') as HTMLInputElement | null)?.checked;
+  const soundEffect = (document.getElementById('soundEffect') as HTMLSelectElement | null)
+    ?.value as SoundEffect | undefined;
+  const cuts = Number((document.getElementById('cutsInput') as HTMLInputElement | null)?.value);
+  const zoom = Number((document.getElementById('zoomInput') as HTMLInputElement | null)?.value);
+  const blur = Number((document.getElementById('blurInput') as HTMLInputElement | null)?.value);
+  return {
+    aspect: aspect ?? DEFAULTS.aspect,
+    format: format ?? DEFAULTS.format,
+    soundEnabled: soundEnabled ?? DEFAULTS.soundEnabled,
+    soundEffect: soundEffect ?? DEFAULTS.soundEffect,
+    cutsPerSec: Number.isFinite(cuts)
+      ? Math.max(LIMITS.cutsPerSec.min, Math.min(LIMITS.cutsPerSec.max, Math.round(cuts)))
+      : DEFAULTS.cutsPerSec,
+    zoomMax: Number.isFinite(zoom)
+      ? Math.max(LIMITS.zoom.min, Math.min(LIMITS.zoom.max, zoom))
+      : DEFAULTS.zoomMax,
+    blurMax: Number.isFinite(blur)
+      ? Math.max(LIMITS.blur.min, Math.min(LIMITS.blur.max, blur))
+      : DEFAULTS.blurMax,
+    durationSec: DEFAULTS.durationSec,
+  };
+}
+
+export function setupControls(onChange: () => void): void {
+  const ids = [
+    'aspectSelect',
+    'formatSelect',
+    'soundToggle',
+    'soundEffect',
+    'cutsInput',
+    'zoomInput',
+    'blurInput',
+  ];
+  for (const id of ids) {
+    const el = document.getElementById(id);
+    if (!el) continue;
+    el.addEventListener('change', onChange);
+    el.addEventListener('input', onChange);
+  }
+  // live value displays
+  const cutsIn = document.getElementById('cutsInput') as HTMLInputElement | null;
+  const cutsVal = document.getElementById('cutsVal');
+  const zoomIn = document.getElementById('zoomInput') as HTMLInputElement | null;
+  const zoomVal = document.getElementById('zoomVal');
+  const blurIn = document.getElementById('blurInput') as HTMLInputElement | null;
+  const blurVal = document.getElementById('blurVal');
+  const sync = (): void => {
+    if (cutsIn && cutsVal) cutsVal.textContent = String(cutsIn.value);
+    if (zoomIn && zoomVal) zoomVal.textContent = `${Number(zoomIn.value).toFixed(1)}x`;
+    if (blurIn && blurVal) blurVal.textContent = String(blurIn.value);
+    // update preview canvas size on aspect change
+    const canvas = document.getElementById('preview') as HTMLCanvasElement | null;
+    const aspect = (document.getElementById('aspectSelect') as HTMLSelectElement | null)?.value as
+      AspectRatio | undefined;
+    if (canvas && aspect && ASPECT_DIMS[aspect]) {
+      const d = ASPECT_DIMS[aspect];
+      canvas.width = d.width / 2;
+      canvas.height = d.height / 2;
+    }
+  };
+  for (const el of [cutsIn, zoomIn, blurIn, document.getElementById('aspectSelect')]) {
+    el?.addEventListener('input', sync);
+    el?.addEventListener('change', sync);
+  }
+  sync();
 }
