@@ -13,6 +13,8 @@ import { setupShortcuts } from './ui/shortcuts.ts';
 import { getPhraseFromURL, setPhraseInURL, copyShareLink } from './ui/share.ts';
 import { saveRecent, renderRecent, loadRecent } from './ui/history.ts';
 import { createFrameCache, drawCachedFrame, type FrameCache } from './render/cache.ts';
+import { updateEncodeBadge } from './ui/encodeBadge.ts';
+import { exportFramesAsZip } from './encode/zipFallback.ts';
 import { ASPECT_DIMS, DEFAULTS } from './config.ts';
 import type { Timeline } from './types.ts';
 const input = document.getElementById('phraseInput') as HTMLInputElement | null;
@@ -29,6 +31,7 @@ const exWrap = document.getElementById('examples') as HTMLElement | null;
 const recentWrap = document.getElementById('recent') as HTMLElement | null;
 const btnCopy = document.getElementById('btnCopyLink') as HTMLButtonElement | null;
 const copyFeedback = document.getElementById('copyFeedback') as HTMLElement | null;
+const badgeEl = document.getElementById('encodeBadge') as HTMLElement | null;
 if (canvas) {
   const d = ASPECT_DIMS[DEFAULTS.aspect];
   canvas.width = d.width / 2;
@@ -159,27 +162,37 @@ async function onDownload(): Promise<void> {
     const fullDims = { width: d.width, height: d.height, aspect: c.aspect } as const;
     const enc = c.format === 'webm' ? encodeWebM : encodeMP4;
     let blob: Blob;
-    let ext = c.format;
+    let filename: string;
     try {
-      blob = await enc(timeline, parsed, {
-        dims: fullDims,
-        fps: c.cutsPerSec,
-        audioBuffer: audioBuf,
-        onProgress: (r) => setProgress(progressEl, r),
-      });
+      let ext = c.format;
+      try {
+        blob = await enc(timeline, parsed, {
+          dims: fullDims,
+          fps: c.cutsPerSec,
+          audioBuffer: audioBuf,
+          onProgress: (r) => setProgress(progressEl, r),
+        });
+      } catch {
+        const fb = c.format === 'mp4' ? encodeWebM : encodeMP4;
+        blob = await fb(timeline, parsed, {
+          dims: fullDims,
+          fps: c.cutsPerSec,
+          audioBuffer: audioBuf,
+          onProgress: (r) => setProgress(progressEl, r),
+        });
+        ext = c.format === 'mp4' ? 'webm' : 'mp4';
+      }
+      filename = filenameFor(ext as 'mp4' | 'webm');
+      if (errEl)
+        errEl.textContent = `Downloaded ${ext.toUpperCase()} (${Math.round(blob.size / 1024)} KB)`;
     } catch {
-      const fb = c.format === 'mp4' ? encodeWebM : encodeMP4;
-      blob = await fb(timeline, parsed, {
-        dims: fullDims,
-        fps: c.cutsPerSec,
-        audioBuffer: audioBuf,
-        onProgress: (r) => setProgress(progressEl, r),
-      });
-      ext = c.format === 'mp4' ? 'webm' : 'mp4';
+      if (errEl) errEl.textContent = 'Encoders unavailable — exporting PNG ZIP…';
+      blob = await exportFramesAsZip(timeline, parsed, fullDims, (r) => setProgress(progressEl, r));
+      filename = 'matchcutter-frames.zip';
+      if (errEl)
+        errEl.textContent = `Downloaded ZIP (${Math.round(blob.size / 1024)} KB) — import frames to editor`;
     }
-    triggerDownload(blob, filenameFor(ext));
-    if (errEl)
-      errEl.textContent = `Downloaded ${ext.toUpperCase()} (${Math.round(blob.size / 1024)} KB)`;
+    triggerDownload(blob, filename);
     setProgress(progressEl, 1);
   } catch (e) {
     if (errEl) errEl.textContent = String((e as Error).message);
@@ -237,6 +250,7 @@ function init(): void {
       if (copyFeedback) copyFeedback.textContent = '';
     }, 2000);
   });
+  updateEncodeBadge(badgeEl);
   setupShortcuts(input);
   setupControls(() => void onGenerate());
 }
