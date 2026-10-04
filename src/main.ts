@@ -12,6 +12,7 @@ import { updateCounter, wrapSelection, getControls, setupControls } from './ui/f
 import { setupShortcuts } from './ui/shortcuts.ts';
 import { getPhraseFromURL, setPhraseInURL, copyShareLink } from './ui/share.ts';
 import { saveRecent, renderRecent, loadRecent } from './ui/history.ts';
+import { createFrameCache, drawCachedFrame, type FrameCache } from './render/cache.ts';
 import { ASPECT_DIMS, DEFAULTS } from './config.ts';
 import type { Timeline } from './types.ts';
 const input = document.getElementById('phraseInput') as HTMLInputElement | null;
@@ -38,7 +39,8 @@ let seed = DEFAULTS.seed,
   parsed: import('./types.ts').ParsedInput | null = null,
   raf = 0,
   startMs = 0,
-  histIdx = -1;
+  histIdx = -1,
+  cache: FrameCache = [];
 const progressEl =
   (document.getElementById('progressBar') as HTMLElement | null) ??
   (() => {
@@ -86,11 +88,15 @@ function loop(now: number): void {
   if (startMs === 0) startMs = now;
   const c = getControls();
   const idx = Math.floor((now - startMs) / (1000 / c.cutsPerSec)) % timeline.length;
-  drawFrame(ctx, timeline[idx], parsed, {
-    width: canvas.width,
-    height: canvas.height,
-    aspect: c.aspect,
-  });
+  if (cache.length === timeline.length) {
+    drawCachedFrame(ctx, cache, idx, canvas.width, canvas.height);
+  } else {
+    drawFrame(ctx, timeline[idx], parsed, {
+      width: canvas.width,
+      height: canvas.height,
+      aspect: c.aspect,
+    });
+  }
   setProgress(progressEl, (idx + 1) / timeline.length);
   raf = requestAnimationFrame(loop);
 }
@@ -103,6 +109,24 @@ async function onGenerate(): Promise<void> {
   if (!input || !counter) return;
   updateCounter(input, counter);
   if (await build(input.value)) {
+    // build preview cache (half-res) for instant rAF blit — ~10x faster than per-frame drawFrame
+    if (parsed && canvas) {
+      const c = getControls();
+      const dims = { width: canvas.width, height: canvas.height, aspect: c.aspect } as const;
+      const t0 = performance.now();
+      try {
+        cache = createFrameCache(timeline, parsed, dims);
+      } catch {
+        cache = [];
+      }
+      if (errEl && cache.length > 0) {
+        const ms = Math.round(performance.now() - t0);
+        // subtle perf hint, not error
+        if (ms > 500) console.warn(`cache built in ${ms}ms for ${timeline.length} frames`);
+      }
+    } else {
+      cache = [];
+    }
     startLoop();
     const ok = parsed !== null;
     if (ok) {
@@ -115,6 +139,8 @@ async function onGenerate(): Promise<void> {
         });
       histIdx = -1;
     }
+  } else {
+    cache = [];
   }
 }
 async function onDownload(): Promise<void> {
