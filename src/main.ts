@@ -10,6 +10,8 @@ import { encodeWebM } from './encode/webmEncoder.ts';
 import { encodeMP4 } from './encode/mp4Encoder.ts';
 import { updateCounter, wrapSelection, getControls, setupControls } from './ui/form.ts';
 import { setupShortcuts } from './ui/shortcuts.ts';
+import { getPhraseFromURL, setPhraseInURL, copyShareLink } from './ui/share.ts';
+import { saveRecent, renderRecent, loadRecent } from './ui/history.ts';
 import { ASPECT_DIMS, DEFAULTS } from './config.ts';
 import type { Timeline } from './types.ts';
 const input = document.getElementById('phraseInput') as HTMLInputElement | null;
@@ -23,6 +25,9 @@ const btnReg = document.getElementById('btnRegenerate') as HTMLButtonElement | n
 const btnDl = document.getElementById('btnDownload') as HTMLButtonElement | null;
 const btnHi = document.getElementById('btnHighlight') as HTMLButtonElement | null;
 const exWrap = document.getElementById('examples') as HTMLElement | null;
+const recentWrap = document.getElementById('recent') as HTMLElement | null;
+const btnCopy = document.getElementById('btnCopyLink') as HTMLButtonElement | null;
+const copyFeedback = document.getElementById('copyFeedback') as HTMLElement | null;
 if (canvas) {
   const d = ASPECT_DIMS[DEFAULTS.aspect];
   canvas.width = d.width / 2;
@@ -32,7 +37,8 @@ let seed = DEFAULTS.seed,
   timeline: Timeline = [],
   parsed: import('./types.ts').ParsedInput | null = null,
   raf = 0,
-  startMs = 0;
+  startMs = 0,
+  histIdx = -1;
 const progressEl =
   (document.getElementById('progressBar') as HTMLElement | null) ??
   (() => {
@@ -93,7 +99,20 @@ function startLoop(): void {
 async function onGenerate(): Promise<void> {
   if (!input || !counter) return;
   updateCounter(input, counter);
-  if (await build(input.value)) startLoop();
+  if (await build(input.value)) {
+    startLoop();
+    const ok = parsed !== null;
+    if (ok) {
+      saveRecent(input.value);
+      setPhraseInURL(input.value);
+      if (recentWrap)
+        renderRecent(recentWrap, (p) => {
+          input.value = p;
+          void onGenerate();
+        });
+      histIdx = -1;
+    }
+  }
 }
 async function onDownload(): Promise<void> {
   if (!parsed || timeline.length === 0) {
@@ -130,7 +149,8 @@ async function onDownload(): Promise<void> {
       ext = c.format === 'mp4' ? 'webm' : 'mp4';
     }
     triggerDownload(blob, filenameFor(ext));
-    if (errEl) errEl.textContent = `Downloaded ${ext.toUpperCase()} (${Math.round(blob.size / 1024)} KB)`;
+    if (errEl)
+      errEl.textContent = `Downloaded ${ext.toUpperCase()} (${Math.round(blob.size / 1024)} KB)`;
     setProgress(progressEl, 1);
   } catch (e) {
     if (errEl) errEl.textContent = String((e as Error).message);
@@ -140,15 +160,33 @@ async function onDownload(): Promise<void> {
 }
 function init(): void {
   if (!input || !ctx || !counter) return;
-  input.value = 'Markets jittery. ==TACO again==.';
+  const fromURL = getPhraseFromURL();
+  input.value = fromURL ?? 'Markets jittery. ==TACO again==.';
   if (exWrap)
     renderExamples(exWrap, (t) => {
       input.value = t;
       void onGenerate();
     });
+  if (recentWrap)
+    renderRecent(recentWrap, (p) => {
+      input.value = p;
+      void onGenerate();
+    });
   updateCounter(input, counter);
   void onGenerate();
   input.addEventListener('input', () => updateCounter(input, counter));
+  input.addEventListener('keydown', (e) => {
+    if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') return;
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    const rec = loadRecent();
+    if (rec.length === 0) return;
+    e.preventDefault();
+    if (e.key === 'ArrowUp') histIdx = Math.min(histIdx + 1, rec.length - 1);
+    else histIdx = Math.max(histIdx - 1, -1);
+    input.value = histIdx >= 0 ? rec[histIdx] : (getPhraseFromURL() ?? '');
+    updateCounter(input, counter);
+    if (histIdx >= 0) void onGenerate();
+  });
   btnGen?.addEventListener('click', () => {
     seed = (seed + 1) >>> 0;
     void onGenerate();
@@ -162,6 +200,13 @@ function init(): void {
     wrapSelection(input);
     updateCounter(input, counter);
     void onGenerate();
+  });
+  btnCopy?.addEventListener('click', async () => {
+    const ok = await copyShareLink(input.value);
+    if (copyFeedback) copyFeedback.textContent = ok ? 'Link copied!' : 'Copy failed';
+    setTimeout(() => {
+      if (copyFeedback) copyFeedback.textContent = '';
+    }, 2000);
   });
   setupShortcuts(input);
   setupControls(() => void onGenerate());
