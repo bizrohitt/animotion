@@ -135,7 +135,7 @@ Legend: `ID` — `Phase` — `Status`
   - Outputs: `encodeMP4(frames, audioBuffer, dims, onProgress) -> Blob` feeding VideoFrame + AudioData to VideoEncoder/AudioEncoder then mp4-muxer; verify mp4-muxer license is MIT
   - Acceptance: on WebCodecs-capable browser, produces `video/mp4` playable in Chrome/VLC; fallback to WebM if VideoEncoder absent; `docs/LICENSES.md` updated with mp4-muxer entry
 
-- [ ] **T-062 — Encoder integration + download**
+- [x] **T-062 — Encoder integration + download**
   - Files: `src/main.ts`, `src/ui/progress.ts`, `index.html` (Download button)
   - Inputs: T-061
   - Outputs: Generate → timeline → render frames → mixdown → pickEncoder → Blob → `URL.createObjectURL` → Download button

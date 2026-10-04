@@ -116,3 +116,8 @@
 - Done: Verified `mp4-muxer` 5.2.2 MIT (`npm view` + docs). Installed mp4-muxer (warn deprecated → mediabunny MPL-2.0 successor documented). Added `src/encode/mp4Encoder.ts` (Muxer+ArrayBufferTarget, VideoEncoder H.264 avc1.4d002a 4Mb, AudioEncoder aac, VideoFrame µs timestamps, flush/finalize → Blob video/mp4). Updated `src/encode/pickEncoder.ts` to prefer MP4 then WebM, with encodeWithFallback. Updated `docs/LICENSES.md` with pinned 5.2.2 MIT and deprecation note. Added `tests/mp4Encoder.test.ts` (6 tests) for isMP4Supported, pick prefers MP4/fallback WebM, throws on unsupported. 116 tests pass.
 - Next: T-062 encoder integration + download.
 - Bugs: none.
+
+## S21 — 2026-10-04 — T-062 encode integration
+- Done: Wired Generate→timeline→mixdown→pickEncoder→Blob→download. Updated `index.html` (Download button), `src/ui/download.ts` (triggerDownload+filename), `src/main.ts` (136 lines, full export at 1080×1920 via encodeWithFallback, progress 0→100, revoke URL, error handling). Build 50.86kB (mp4-muxer included), preview downscaled, export full-res.
+- Next: T-070 phrase input polish + T-071 controls wiring.
+- Bugs: none.

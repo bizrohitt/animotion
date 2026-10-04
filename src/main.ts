@@ -4,6 +4,9 @@ import { buildTimeline } from './timeline/buildTimeline.ts';
 import { drawFrame, ensureFontsLoaded } from './render/drawFrame.ts';
 import { setProgress } from './ui/progress.ts';
 import { renderExamples } from './ui/examples.ts';
+import { triggerDownload, filenameFor } from './ui/download.ts';
+import { mixdown } from './audio/mixdown.ts';
+import { encodeWithFallback } from './encode/pickEncoder.ts';
 import { ASPECT_DIMS, DEFAULTS, LIMITS } from './config.ts';
 import type { Timeline } from './types.ts';
 
@@ -15,6 +18,7 @@ const ctx = canvas?.getContext('2d') ?? null;
 const progressWrap = document.getElementById('progressWrap') as HTMLElement | null;
 const btnGen = document.getElementById('btnGenerate') as HTMLButtonElement | null;
 const btnReg = document.getElementById('btnRegenerate') as HTMLButtonElement | null;
+const btnDl = document.getElementById('btnDownload') as HTMLButtonElement | null;
 const exWrap = document.getElementById('examples') as HTMLElement | null;
 
 const dims = ASPECT_DIMS['9:16'];
@@ -41,7 +45,6 @@ function updateCounter(raw: string): void {
   counter.textContent = `${n}/${LIMITS.focalMaxChars}`;
   counter.style.color = n > LIMITS.focalMaxChars ? 'crimson' : '';
 }
-
 function showPlaceholder(msg: string): void {
   if (!ctx || !canvas) return;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -52,7 +55,6 @@ function showPlaceholder(msg: string): void {
   ctx.textAlign = 'center';
   ctx.fillText(msg, canvas.width / 2, canvas.height / 2);
 }
-
 async function build(raw: string): Promise<boolean> {
   const res = parseInput(raw);
   if (!res.ok) {
@@ -69,36 +71,60 @@ async function build(raw: string): Promise<boolean> {
     blurMax: DEFAULTS.blurMax,
     seed,
   });
-  const fonts = [...new Set(timeline.map((f) => f.fontFamily))];
-  await ensureFontsLoaded(fonts);
+  await ensureFontsLoaded([...new Set(timeline.map((f) => f.fontFamily))]);
   return true;
 }
-
 function loop(now: number): void {
   if (!ctx || !canvas || timeline.length === 0 || !parsed) return;
   if (startMs === 0) startMs = now;
-  const elapsed = now - startMs;
-  const frameDur = 1000 / DEFAULTS.cutsPerSec;
-  const idx = Math.floor(elapsed / frameDur) % timeline.length;
-  const spec = timeline[idx];
-  const previewDims = { width: canvas.width, height: canvas.height, aspect: '9:16' as const };
-  drawFrame(ctx, spec, parsed, previewDims);
+  const idx = Math.floor((now - startMs) / (1000 / DEFAULTS.cutsPerSec)) % timeline.length;
+  drawFrame(ctx, timeline[idx], parsed, {
+    width: canvas.width,
+    height: canvas.height,
+    aspect: '9:16',
+  });
   setProgress(progressEl, (idx + 1) / timeline.length);
   raf = requestAnimationFrame(loop);
 }
-
 function startLoop(): void {
   cancelAnimationFrame(raf);
   startMs = 0;
   raf = requestAnimationFrame(loop);
 }
-
 async function onGenerate(): Promise<void> {
   if (!input) return;
   updateCounter(input.value);
   if (await build(input.value)) startLoop();
 }
-
+async function onDownload(): Promise<void> {
+  if (!parsed || timeline.length === 0) {
+    if (errEl) errEl.textContent = 'Generate preview first.';
+    return;
+  }
+  if (btnDl) btnDl.disabled = true;
+  try {
+    setProgress(progressEl, 0);
+    if (errEl) errEl.textContent = 'Mixing audio...';
+    const audioBuf = await mixdown(timeline, DEFAULTS.soundEnabled ? DEFAULTS.soundEffect : 'none');
+    if (errEl) errEl.textContent = 'Encoding video...';
+    const d = ASPECT_DIMS[DEFAULTS.aspect];
+    const fullDims = { width: d.width, height: d.height, aspect: DEFAULTS.aspect } as const;
+    const { blob, ext } = await encodeWithFallback(timeline, parsed, {
+      dims: fullDims,
+      fps: DEFAULTS.cutsPerSec,
+      audioBuffer: audioBuf,
+      onProgress: (r) => setProgress(progressEl, r),
+    });
+    triggerDownload(blob, filenameFor(ext));
+    if (errEl)
+      errEl.textContent = `Downloaded ${ext.toUpperCase()} (${Math.round(blob.size / 1024)} KB)`;
+    setProgress(progressEl, 1);
+  } catch (e) {
+    if (errEl) errEl.textContent = String((e as Error).message);
+  } finally {
+    if (btnDl) btnDl.disabled = false;
+  }
+}
 function init(): void {
   if (!input || !ctx) return;
   input.value = 'Markets jittery. ==TACO again==.';
@@ -118,6 +144,7 @@ function init(): void {
     seed = (seed + 54321) >>> 0;
     void onGenerate();
   });
+  btnDl?.addEventListener('click', () => void onDownload());
   document.addEventListener('keydown', (e) => {
     if (e.key === '/' && !(e.target instanceof HTMLInputElement)) {
       e.preventDefault();
