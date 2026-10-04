@@ -136,3 +136,8 @@
 - Done: Added `src/gate/SupportGate.ts` (NoopGate disabled by default, render/on/off no-ops, enable/disable, singleton supportGate, isGateNoop). Added `tests/gate.test.ts` (5 tests) for disabled renders nothing, enabled placeholder, on/off no-ops, singleton, enable/disable. 121 tests pass, no network, no tracking.
 - Next: T-080 functional freeze QA + T-090 styling.
 - Bugs: none.
+
+## S25 — 2026-10-04 — T-080 QA + T-090/091 styling
+- Done: QA pass — verified `Markets jittery. ==TACO again==.` <15s via mixdown→encode fallback, 121 tests pass, lint0 tsc0, anchor pixel-aligned, zero network, inline styles removed from gating. Added `styles/variables.css` (tokens: warm paper, charcoal, accent red/blue, type scale, spacing, dark via prefers-color-scheme) and `styles/main.css` (editorial grid, cards, progress-bar, support-gate, page, responsive 860px/520px, focus states, contrast ≥4.5:1). Updated `index.html` to editorial wrap/header/hero/editor-grid with linked CSS, no inline except dynamic width. Updated `src/gate/SupportGate.ts` to use class and `src/main.ts` to use #progressBar.
+- Next: T-100 static pages.
+- Bugs: none.

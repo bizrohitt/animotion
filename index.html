@@ -8,89 +8,141 @@
       name="description"
       content="Turn a phrase with one highlighted word into a newspaper-clipping match cut video. 100% browser-only, no uploads."
     />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="stylesheet" href="/styles/main.css" />
   </head>
   <body>
-    <main>
-      <h1>MatchCutter</h1>
-      <p>Wrap one word with <code>==word==</code>. Max 23 chars focal.</p>
-      <label
-        >Phrase:
-        <input
-          id="phraseInput"
-          type="text"
-          placeholder="Markets jittery. ==TACO again==."
-          style="width: 360px"
-        />
-        <span id="charCounter">0/23</span>
-      </label>
-      <div id="error" style="color: crimson; min-height: 1.2em"></div>
-      <div style="margin: 8px 0">
-        <button id="btnGenerate" type="button">Generate</button>
-        <button id="btnRegenerate" type="button">Regenerate</button>
-        <button id="btnDownload" type="button">Download</button>
-        <button id="btnHighlight" type="button">Highlight selection</button>
+    <header class="site-head">
+      <div class="wrap">
+        <div class="brand">Match<span>Cutter</span></div>
+        <nav class="site-nav" aria-label="Primary">
+          <a href="/">Create</a>
+          <a href="/pages/how.html">How it works</a>
+          <a href="/pages/faq.html">FAQ</a>
+          <a href="/pages/about.html">About</a>
+        </nav>
       </div>
-      <fieldset style="max-width: 360px">
-        <legend>Output</legend>
-        <label
-          >Aspect:
-          <select id="aspectSelect">
-            <option value="9:16" selected>9:16 (1080×1920)</option>
-            <option value="1:1">1:1 (1080×1080)</option>
-            <option value="16:9">16:9 (1920×1080)</option>
-          </select>
-        </label>
-        <label style="margin-left: 12px"
-          >Format:
-          <select id="formatSelect">
-            <option value="mp4" selected>MP4</option>
-            <option value="webm">WebM</option>
-          </select>
-        </label>
-      </fieldset>
-      <fieldset style="max-width: 360px">
-        <legend>Sound</legend>
-        <label><input type="checkbox" id="soundToggle" checked /> Sound on</label>
-        <label style="margin-left: 12px"
-          >Effect:
-          <select id="soundEffect">
-            <option value="paperShuffle" selected>paper shuffle</option>
-            <option value="cameraShutter">camera shutter</option>
-            <option value="filmAdvance">film advance</option>
-            <option value="polaroid">polaroid</option>
-            <option value="flashPop">flash pop</option>
-            <option value="none">none</option>
-          </select>
-        </label>
-      </fieldset>
-      <fieldset style="max-width: 360px">
-        <legend>Advanced</legend>
-        <label
-          >Cuts/s: <input type="range" id="cutsInput" min="4" max="30" value="12" />
-          <span id="cutsVal">12</span></label
-        ><br />
-        <label
-          >Zoom: <input type="range" id="zoomInput" min="1" max="3" step="0.1" value="1.2" />
-          <span id="zoomVal">1.2x</span></label
-        ><br />
-        <label
-          >Blur: <input type="range" id="blurInput" min="0" max="3" step="0.1" value="0" />
-          <span id="blurVal">0</span></label
-        >
-      </fieldset>
-      <div
-        id="progressWrap"
-        style="width: 100%; height: 6px; background: #eee; max-width: 360px; margin-top: 8px"
-      ></div>
-      <canvas
-        id="preview"
-        width="540"
-        height="960"
-        style="border: 1px solid #ccc; max-width: 360px; width: 100%; background: #fff"
-      ></canvas>
-      <div id="examples" style="margin: 8px 0"></div>
-      <div id="app"></div>
+    </header>
+    <main>
+      <div class="wrap">
+        <div class="hero">
+          <h1>Make words collide.</h1>
+          <p>
+            Wrap one focal word with <code>==word==</code> — max 23 characters. MatchCutter pins it
+            at the same anchor while paper, ink, rotation and filler jitter around it. 100% in your
+            browser.
+          </p>
+        </div>
+        <div class="editor-grid">
+          <section class="card">
+            <h2>Your phrase</h2>
+            <label for="phraseInput">Phrase</label>
+            <div class="phrase-row">
+              <input
+                id="phraseInput"
+                type="text"
+                placeholder="Markets jittery. ==TACO again==."
+                autocomplete="off"
+              />
+            </div>
+            <div class="counter" id="charCounter" aria-live="polite">0/23</div>
+            <div class="hint">Press <kbd>/</kbd> to focus. Select a word and click Highlight.</div>
+            <div id="error" class="hint error"></div>
+            <div class="btn-row">
+              <button id="btnGenerate" type="button" class="btn btn-primary">Generate</button>
+              <button id="btnRegenerate" type="button" class="btn">Regenerate</button>
+              <button id="btnDownload" type="button" class="btn">Download</button>
+              <button id="btnHighlight" type="button" class="btn">Highlight selection</button>
+            </div>
+            <div class="controls controls-spaced">
+              <fieldset>
+                <legend>Output</legend>
+                <div class="grid-2">
+                  <label
+                    >Aspect
+                    <select id="aspectSelect">
+                      <option value="9:16" selected>9:16 (1080×1920)</option>
+                      <option value="1:1">1:1 (1080×1080)</option>
+                      <option value="16:9">16:9 (1920×1080)</option>
+                    </select>
+                  </label>
+                  <label
+                    >Format
+                    <select id="formatSelect">
+                      <option value="mp4" selected>MP4</option>
+                      <option value="webm">WebM</option>
+                    </select>
+                  </label>
+                </div>
+              </fieldset>
+              <fieldset>
+                <legend>Sound</legend>
+                <div class="grid-2">
+                  <label><input type="checkbox" id="soundToggle" checked /> Sound on</label>
+                  <label
+                    >Effect
+                    <select id="soundEffect">
+                      <option value="paperShuffle" selected>paper shuffle</option>
+                      <option value="cameraShutter">camera shutter</option>
+                      <option value="filmAdvance">film advance</option>
+                      <option value="polaroid">polaroid</option>
+                      <option value="flashPop">flash pop</option>
+                      <option value="none">none</option>
+                    </select>
+                  </label>
+                </div>
+              </fieldset>
+              <fieldset>
+                <legend>Advanced</legend>
+                <div class="range-row">
+                  <label for="cutsInput">Cuts/s</label>
+                  <div class="range-control">
+                    <input type="range" id="cutsInput" min="4" max="30" value="12" />
+                    <output id="cutsVal">12</output>
+                  </div>
+                </div>
+                <div class="range-row">
+                  <label for="zoomInput">Zoom</label>
+                  <div class="range-control">
+                    <input type="range" id="zoomInput" min="1" max="3" step="0.1" value="1.2" />
+                    <output id="zoomVal">1.2x</output>
+                  </div>
+                </div>
+                <div class="range-row">
+                  <label for="blurInput">Blur</label>
+                  <div class="range-control">
+                    <input type="range" id="blurInput" min="0" max="3" step="0.1" value="0" />
+                    <output id="blurVal">0</output>
+                  </div>
+                </div>
+              </fieldset>
+            </div>
+            <div class="examples" id="examples"></div>
+          </section>
+          <section class="card preview-wrap">
+            <h2>Preview</h2>
+            <canvas id="preview" width="540" height="960"></canvas>
+            <div class="progress" id="progressWrap">
+              <div class="progress-bar" id="progressBar"></div>
+            </div>
+            <p class="hint">
+              Preview is half-resolution. Export is full-res (1080p). No watermark.
+            </p>
+            <div id="app"></div>
+          </section>
+        </div>
+      </div>
     </main>
+    <footer class="site-foot">
+      <div class="wrap">
+        <div>© 2026 MatchCutter — Browser-only. No uploads, no tracking.</div>
+        <nav class="foot-nav">
+          <a href="/pages/privacy.html">Privacy</a>
+          <a href="/pages/terms.html">Terms</a>
+          <a href="/pages/about.html">About</a>
+        </nav>
+      </div>
+    </footer>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

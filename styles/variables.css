@@ -1,0 +1,55 @@
+/* Design tokens — editorial MatchCutter (P9) */
+:root {
+  /* Palette — warm paper + charcoal ink */
+  --bg: #fdfbf7;
+  --fg: #1a1a1a;
+  --muted: #6b6b6b;
+  --line: #e8e2d9;
+  --accent: #b91c1c; /* editorial red */
+  --accent-2: #1a4d8f; /* ink blue */
+  --paper: #fffefb;
+  --card: #ffffff;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.06);
+
+  /* Typography — serif display, sans body */
+  --font-display: 'DM Serif Display', 'Libre Baskerville', Georgia, serif;
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', monospace;
+
+  /* Scale */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.35rem;
+  --text-2xl: 1.7rem;
+  --text-3xl: 2.2rem;
+
+  /* Spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius: 10px;
+  --radius-lg: 14px;
+
+  /* Borders */
+  --border: 1px solid var(--line);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f0f0f;
+    --fg: #f0ece6;
+    --muted: #9a9a9a;
+    --line: #2a2a2a;
+    --paper: #1a1a1a;
+    --card: #1e1e1e;
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.5);
+  }
+}

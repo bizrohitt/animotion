@@ -163,7 +163,7 @@ Legend: `ID` — `Phase` — `Status`
 
 ## P8 — Functional Freeze (quality gate)
 
-- [ ] **T-080 — QA pass + perf + offline check**
+- [x] **T-080 — QA pass + perf + offline check**
   - Files: (no new files; fix bugs), `SESSION_LOG.md`
   - Inputs: all P0-P7
   - Outputs: bug fixes, perf tweaks (OffscreenCanvas, downscaled preview)
@@ -171,13 +171,13 @@ Legend: `ID` — `Phase` — `Status`
 
 ## P9 — Styling & Responsive Design
 
-- [ ] **T-090 — Design system (CSS variables, editorial aesthetic)**
+- [x] **T-090 — Design system (CSS variables, editorial aesthetic)**
   - Files: `styles/main.css`, `styles/variables.css`, `index.html` (link)
   - Inputs: P8 freeze
   - Outputs: CSS vars for colours, type scale, spacing; newspaper/editorial look; dark/light via `prefers-color-scheme`
   - Acceptance: visually distinct editorial style; no inline styles; vars documented; contrast ≥4.5:1
 
-- [ ] **T-091 — Responsive layout & polished controls**
+- [x] **T-091 — Responsive layout & polished controls**
   - Files: `styles/layout.css`, `styles/components.css`, `index.html`
   - Inputs: T-090
   - Outputs: responsive grid (mobile single column, desktop side-by-side), aspect-aware preview sizing, styled buttons/sliders/progress
