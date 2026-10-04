@@ -4,6 +4,10 @@ import {
   wrapWordWithMarkers,
   unwrapMarkers,
   getFocalLength,
+  extractFocal,
+  validateLength,
+  sanitizeInput,
+  toggleMarkers,
 } from '../src/parser/parseInput.ts';
 
 describe('parseInput', () => {
@@ -145,5 +149,60 @@ describe('parseInput', () => {
     // raw has 2 markers but inside word contains ==? impossible, but test stray
     const r = parseInput('==hello== world ==');
     expect(r.ok).toBe(false);
+  });
+});
+
+describe('parser helpers (T-011)', () => {
+  it('extractFocal returns word or null', () => {
+    expect(extractFocal('hello ==world==')).toBe('world');
+    expect(extractFocal('hello world')).toBeNull();
+    expect(extractFocal('==  spaced  ==')).toBe('spaced');
+  });
+
+  it('validateLength checks 23 limit', () => {
+    expect(validateLength('hello').ok).toBe(true);
+    expect(validateLength('').ok).toBe(false);
+    expect(validateLength('   ').ok).toBe(false);
+    expect(validateLength('A'.repeat(23)).ok).toBe(true);
+    expect(validateLength('A'.repeat(24)).ok).toBe(false);
+  });
+
+  it('sanitizeInput trims and collapses spaces', () => {
+    expect(sanitizeInput('  hello   world  ')).toBe('hello world');
+    expect(sanitizeInput('==TACO==')).toBe('==TACO==');
+    expect(sanitizeInput('  a  ==b==  c  ')).toBe('a ==b== c');
+  });
+
+  it('wrapWordWithMarkers trims and rejects >23', () => {
+    const long = 'A'.repeat(24);
+    expect(wrapWordWithMarkers(`hello ${long} world`, 6, 30)).toBe(`hello ${long} world`); // rejected
+    expect(wrapWordWithMarkers('hello world', 6, 11)).toBe('hello ==world==');
+    // phrase with 3 spaces; select exact "world" at 8..13
+    expect(wrapWordWithMarkers('hello   world', 8, 13)).toBe('hello   ==world==');
+    // selecting with surrounding spaces trims
+    expect(wrapWordWithMarkers('hello   world   ', 5, 13)).toBe('hello==world==   ');
+  });
+
+  it('toggleMarkers wraps when no markers', () => {
+    const raw = 'hello world';
+    expect(toggleMarkers(raw, 6, 11)).toBe('hello ==world==');
+  });
+
+  it('toggleMarkers unwraps when selection overlaps highlight', () => {
+    const raw = 'hello ==world==';
+    // selection inside world (raw indices: 0-5 "hello ", 6-7 "==", 8-12 "world", 13-14 "==")
+    expect(toggleMarkers(raw, 8, 13)).toBe('hello world');
+    // selection includes markers
+    expect(toggleMarkers(raw, 6, 15)).toBe('hello world');
+  });
+
+  it('toggleMarkers does not double-wrap when markers present but selection elsewhere', () => {
+    const raw = 'hello ==world== test';
+    expect(toggleMarkers(raw, 16, 20)).toBe(raw); // selection "test" not overlapping
+  });
+
+  it('toggleMarkers with empty selection returns raw', () => {
+    expect(toggleMarkers('hello world', 5, 5)).toBe('hello world');
+    expect(toggleMarkers('hello ==world==', 5, 5)).toBe('hello ==world==');
   });
 });

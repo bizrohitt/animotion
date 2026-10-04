@@ -41,7 +41,7 @@ Legend: `ID` — `Phase` — `Status`
   - Outputs: `parseInput(raw: string) -> { ok, parsed?, error? }` handling single `==word==`, trimming, 23-char focal limit, plain phrase fallback
   - Acceptance: 15+ unit tests pass: valid `==word==`, no marker (error), two markers (error), empty focal, >23 chars, whitespace, unicode; 100% branch coverage for parser
 
-- [ ] **T-011 — Parser edge cases & helper exports**
+- [x] **T-011 — Parser edge cases & helper exports**
   - Files: `src/parser/parseInput.ts` (helpers), `tests/parser.test.ts` (additional)
   - Inputs: T-010
   - Outputs: helpers `extractFocal()`, `validateLength()`, `sanitizeInput()` if needed; word-select helper for `==` wrapping

@@ -67,13 +67,14 @@ export function parseInput(raw: string): ParseResult {
   return { ok: true, parsed };
 }
 
-// Helper for future word-select wrapping (used in T-011, exposed now for testability)
 export function wrapWordWithMarkers(phrase: string, start: number, end: number): string {
   const before = phrase.slice(0, start);
   const word = phrase.slice(start, end);
   const after = phrase.slice(end);
   if (word.includes('==')) return phrase;
-  return `${before}==${word}==${after}`;
+  if (word.trim().length === 0) return phrase;
+  if (word.trim().length > LIMITS.focalMaxChars) return phrase;
+  return `${before}==${word.trim()}==${after}`;
 }
 
 export function unwrapMarkers(raw: string): string {
@@ -83,4 +84,54 @@ export function unwrapMarkers(raw: string): string {
 export function getFocalLength(raw: string): number {
   const res = parseInput(raw);
   return res.ok ? res.parsed.focalWord.length : 0;
+}
+
+export function extractFocal(raw: string): string | null {
+  const r = parseInput(raw);
+  return r.ok ? r.parsed.focalWord : null;
+}
+
+export function validateLength(focal: string): { ok: boolean; error?: string } {
+  const t = focal.trim();
+  if (t.length === 0) return { ok: false, error: 'Focal text cannot be empty.' };
+  if (t.length > LIMITS.focalMaxChars)
+    return {
+      ok: false,
+      error: `Focal text must be ≤${LIMITS.focalMaxChars} characters (got ${t.length}).`,
+    };
+  return { ok: true };
+}
+
+export function sanitizeInput(raw: string): string {
+  // Trim outer whitespace and collapse inner multiple spaces (preserve markers)
+  return raw.trim().replace(/\s{2,}/g, ' ');
+}
+
+/**
+ * Toggle == markers around a selection.
+ * - If raw already has a highlight and selection overlaps it, unwrap.
+ * - Otherwise, wrap the selected substring.
+ * Selection indices are in raw string coordinates.
+ */
+export function toggleMarkers(raw: string, start: number, end: number): string {
+  if (start === end) return raw;
+  const hasMarkers = raw.includes('==');
+  if (hasMarkers) {
+    const res = parseInput(raw);
+    if (res.ok) {
+      const m = [...raw.matchAll(/==(.+?)==/g)][0];
+      if (m && m.index !== undefined) {
+        const open = m.index;
+        const close = open + m[0].length;
+        // Overlaps the highlighted region (including markers)
+        if (start < close && end > open) {
+          return unwrapMarkers(raw);
+        }
+      }
+    }
+    // Has markers but selection does not overlap — do not double-wrap
+    return raw;
+  }
+  // No markers: wrap selection
+  return wrapWordWithMarkers(raw, start, end);
 }

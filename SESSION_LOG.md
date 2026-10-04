@@ -40,3 +40,9 @@
 - Verified: `eslint`, `tsc --noEmit`, `prettier --check`, `vitest`, `check-lines` OK; branch coverage high.
 - Next: T-011 parser edge cases & helper exports (wrap/unwrap already exposed, add word-select helper if needed).
 - Bugs: none.
+
+## S07 — 2026-10-04 — T-011 parser helpers
+- Done: Extended `src/parser/parseInput.ts` with `extractFocal`, `validateLength`, `sanitizeInput`, `toggleMarkers` (wrap/unwrap toggle, >23 guard, empty guard). Added 8 extra tests (total 29 parser tests) for helpers, sanitize, toggle (wrap/unwrap/overlap/empty). 38 tests pass.
+- Decisions: `toggleMarkers` uses raw indices, unwrap if overlap with existing highlight, otherwise wrap trimmed selection.
+- Next: T-020 layout presets & filler data.
+- Bugs: none.
