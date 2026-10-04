@@ -101,3 +101,8 @@
 - Done: Added `src/audio/effects.ts` (6 effects: paperShuffle 80ms lowpass, cameraShutter 2×28ms bandpass, filmAdvance 3×18ms+45ms, polaroid thud+sine+swish, flashPop 35ms bandpass, none silent) with `getEffectFn` and `EFFECT_NAMES`. Added `tests/effects.test.ts` (8 tests) for existence, non-silent <300ms, silent none, distinct counts. All 100 tests pass.
 - Next: T-052 mixdown.
 - Bugs: none.
+
+## S18 — 2026-10-04 — T-052 mixdown
+- Done: Added `src/audio/mixdown.ts` (OfflineAudioContext 48kHz, tail 0.3s, per-frame effect at timestampMs/1000, fallback silent+fillBursts for node). Added `tests/mixdown.test.ts` (5 tests) for duration ≈ timeline, non-silent for none vs audible, burst timing ±10ms, empty timeline. 105 tests pass.
+- Next: T-060 WebM encoder.
+- Bugs: none.

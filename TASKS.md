@@ -115,7 +115,7 @@ Legend: `ID` — `Phase` — `Status`
   - Outputs: `getEffectFn(name: SoundEffect) -> (ctx, time) => void` for paper shuffle, camera shutter, film advance, polaroid, flash pop, none
   - Acceptance: each effect (except none) renders audible samples in OfflineAudioContext; `none` is silent; all <300ms; no CC0 samples unless documented
 
-- [ ] **T-052 — Mixdown (schedule bursts at cut timestamps)**
+- [x] **T-052 — Mixdown (schedule bursts at cut timestamps)**
   - Files: `src/audio/mixdown.ts`, `tests/mixdown.test.ts`
   - Inputs: T-051, `src/timeline/buildTimeline.ts`
   - Outputs: `mixdown(timeline, effect, opts) -> Promise<AudioBuffer>` via OfflineAudioContext at 48kHz
