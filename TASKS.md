@@ -109,7 +109,7 @@ Legend: `ID` — `Phase` — `Status`
   - Outputs: `makeNoiseBuffer(ctx, type)`, `envelope(gain, attack, decay)`, `filteredNoise(ctx, freq, Q)`
   - Acceptance: OfflineAudioContext renders non-silent buffer; envelope shapes verified via sample inspection; no external samples
 
-- [ ] **T-051 — Six sound effects (synthesized)**
+- [x] **T-051 — Six sound effects (synthesized)**
   - Files: `src/audio/effects.ts`, `tests/effects.test.ts`
   - Inputs: T-050
   - Outputs: `getEffectFn(name: SoundEffect) -> (ctx, time) => void` for paper shuffle, camera shutter, film advance, polaroid, flash pop, none

@@ -96,3 +96,8 @@
 - Done: Added `src/audio/synth.ts` (makeNoiseBuffer seeded, envelope with linear+exp to 0.001, filteredNoise, sineBlip) and `tests/synth.test.ts` (4 tests) for non-silent buffer, determinism, envelope automation not zero, param variation. No external samples.
 - Next: T-051 six sound effects (synthesized).
 - Bugs: none.
+
+## S17 — 2026-10-04 — T-051 effects
+- Done: Added `src/audio/effects.ts` (6 effects: paperShuffle 80ms lowpass, cameraShutter 2×28ms bandpass, filmAdvance 3×18ms+45ms, polaroid thud+sine+swish, flashPop 35ms bandpass, none silent) with `getEffectFn` and `EFFECT_NAMES`. Added `tests/effects.test.ts` (8 tests) for existence, non-silent <300ms, silent none, distinct counts. All 100 tests pass.
+- Next: T-052 mixdown.
+- Bugs: none.
