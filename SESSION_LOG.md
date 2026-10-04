@@ -69,3 +69,8 @@
 - Verified: Paper visibly different per tint, highlight 3 styles render without throw, bbox math within 0.5px, lint/tsc/test/lines OK.
 - Next: T-031 zoom & blur utilities.
 - Bugs: none.
+
+## S12 — 2026-10-04 — T-031 zoomBlur
+- Done: Added `src/render/zoomBlur.ts` (applyZoom via translate/scale around cx,cy, applyBlur via ctx.filter with guard, resetTransform). Added `tests/zoomBlur.test.ts` (6 tests) for 1.0 no-op, 2.0 scaling, blur 0/2.5, unsupported filter, reset.
+- Next: T-032 drawFrame (anchor-pinned single frame) + minimal preview.
+- Bugs: none.

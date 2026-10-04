@@ -75,7 +75,7 @@ Legend: `ID` — `Phase` — `Status`
   - Outputs: `drawPaper(ctx, w, h, style, seed)` (noise + tint, no image fetch), `drawHighlight(ctx, bbox, style)` (marker/underline/box)
   - Acceptance: `drawPaper` produces visibly different output per style (pixel diff test or snapshot); `drawHighlight` renders 3 styles without throwing; unit tests for bbox math
 
-- [ ] **T-031 — Zoom & blur utilities**
+- [x] **T-031 — Zoom & blur utilities**
   - Files: `src/render/zoomBlur.ts`, `tests/zoomBlur.test.ts`
   - Inputs: `src/types.ts`
   - Outputs: `applyZoom(ctx, zoom, cx, cy)`, `applyBlur(ctx, blur)` (`ctx.filter = blur(Npx)` with fallback)
