@@ -106,3 +106,8 @@
 - Done: Added `src/audio/mixdown.ts` (OfflineAudioContext 48kHz, tail 0.3s, per-frame effect at timestampMs/1000, fallback silent+fillBursts for node). Added `tests/mixdown.test.ts` (5 tests) for duration ≈ timeline, non-silent for none vs audible, burst timing ±10ms, empty timeline. 105 tests pass.
 - Next: T-060 WebM encoder.
 - Bugs: none.
+
+## S19 — 2026-10-04 — T-060 WebM encoder
+- Done: Added `src/encode/webmEncoder.ts` (canvas.captureStream fps + MediaRecorder VP9/WebM, audio mix via MediaStreamDestination, onProgress) and `src/encode/pickEncoder.ts` stub (WebM only, VideoEncoder check for T-061). Added `tests/webmEncoder.test.ts` (5 tests) for feature-detect false/true, pickEncoder throw/return, encodeWebM throws when unsupported. 110 tests pass.
+- Next: T-061 MP4 encoder (WebCodecs + mp4-muxer).
+- Bugs: none.

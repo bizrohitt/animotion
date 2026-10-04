@@ -123,7 +123,7 @@ Legend: `ID` — `Phase` — `Status`
 
 ## P6 — Encoding
 
-- [ ] **T-060 — WebM encoder (MediaRecorder)**
+- [x] **T-060 — WebM encoder (MediaRecorder)**
   - Files: `src/encode/webmEncoder.ts`, `src/encode/pickEncoder.ts` (stub)
   - Inputs: `src/types.ts`, `src/render/drawFrame.ts`
   - Outputs: `encodeWebM(frames, audioBuffer, dims, onProgress) -> Blob` via canvas.captureStream + MediaRecorder; feature-detect
