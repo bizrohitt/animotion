@@ -9,7 +9,7 @@ Legend: `ID` — `Phase` — `Status`
 
 ## P0 — Setup
 
-- [ ] **T-001 — Repo scaffolding: Vite + TS strict + base files**
+- [x] **T-001 — Repo scaffolding: Vite + TS strict + base files**
   - Files: `package.json`, `tsconfig.json`, `vite.config.ts`, `index.html` (minimal), `src/types.ts` (stub), `src/config.ts` (stub), `LICENSE` (MIT), `.gitignore`
   - Inputs: empty repo
   - Outputs: `npm install` succeeds, `npm run dev` serves empty page, `npm run build` succeeds
