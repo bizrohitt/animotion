@@ -4,12 +4,7 @@
 export type AspectRatio = '9:16' | '1:1' | '16:9';
 
 export type SoundEffect =
-  | 'paperShuffle'
-  | 'cameraShutter'
-  | 'filmAdvance'
-  | 'polaroid'
-  | 'flashPop'
-  | 'none';
+  'paperShuffle' | 'cameraShutter' | 'filmAdvance' | 'polaroid' | 'flashPop' | 'none';
 
 export type HighlightStyle = 'marker' | 'underline' | 'box';
 
@@ -21,9 +16,7 @@ export interface ParsedInput {
   focalEnd: number; // exclusive
 }
 
-export type ParseResult =
-  | { ok: true; parsed: ParsedInput }
-  | { ok: false; error: string };
+export type ParseResult = { ok: true; parsed: ParsedInput } | { ok: false; error: string };
 
 export interface PaperStyle {
   id: string;

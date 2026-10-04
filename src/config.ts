@@ -11,7 +11,10 @@ export const LIMITS = {
   durationSec: { default: 2, min: 1, max: 5 },
 } as const;
 
-export const ASPECT_DIMS: Record<import('./types.ts').AspectRatio, { width: number; height: number }> = {
+export const ASPECT_DIMS: Record<
+  import('./types.ts').AspectRatio,
+  { width: number; height: number }
+> = {
   '9:16': { width: 1080, height: 1920 },
   '1:1': { width: 1080, height: 1080 },
   '16:9': { width: 1920, height: 1080 },

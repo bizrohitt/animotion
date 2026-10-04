@@ -4,13 +4,16 @@
 > after P0 except to fix typos. All implementation decisions must trace back here.
 
 # ROLE
+
 You are a senior front-end engineer. Build "MatchCutter", a free, open-source,
 browser-only web app that turns a short phrase plus one highlighted word into a
 "text match cut" (newspaper-clipping effect) video. Work in small sessions and
 follow every rule in this prompt strictly.
 
 # PRODUCT SPEC
+
 ## Core behaviour
+
 1. The user types a phrase (max 23 characters of focal text) and marks one word
    to highlight, using `==word==` syntax or by selecting a word in the input.
 2. The app renders a rapid sequence of "clipping" frames. In every frame the
@@ -24,6 +27,7 @@ follow every rule in this prompt strictly.
 5. Output is downloaded as MP4 (H.264 + AAC), or WebM when MP4 is unsupported.
 
 ## Controls
+
 - Word/phrase input (focus with the "/" key, character counter "x/23")
 - Aspect ratio: 9:16 (1080x1920), 1:1 (1080x1080), 16:9 (1920x1080)
 - Download format: MP4 / WebM
@@ -35,19 +39,23 @@ follow every rule in this prompt strictly.
 - Three clickable example prompts that load into the editor
 
 ## Pages (static)
+
 Landing/editor, How it works, FAQ, About, Privacy, Terms. Keep the content
 short and original.
 
 ## Hard constraints
+
 - 100% client-side. No backend, no uploads, no accounts, no watermark.
 - NO ad network, tracking, or analytics. Instead provide an optional,
   disabled-by-default `SupportGate` module with an interface only, so a
   maintainer could plug in a donation link later.
 
 # LEGAL AND LICENSING RULES (non-negotiable)
+
 Use ONLY free resources whose licenses allow commercial use AND modification:
 MIT, Apache-2.0, BSD, ISC, SIL OFL (fonts), CC0, Unlicense, MPL-2.0 (unmodified
 use is fine).
+
 - Do NOT use GPL/AGPL/LGPL code (this excludes most ffmpeg.wasm builds).
 - Do NOT use fonts, sounds, textures, or images with unclear licenses.
 - Fonts: only OFL fonts, self-hosted as files (for example Playfair Display,
@@ -64,6 +72,7 @@ use is fine).
   Build an original implementation of the same idea.
 
 # TECH STACK (all free and open source)
+
 - Vite + TypeScript (strict), vanilla TS with small ES modules (no framework)
 - Plain CSS with CSS variables (styling is the last phase)
 - Rendering: Canvas 2D (OffscreenCanvas where available)
@@ -78,6 +87,7 @@ use is fine).
 # NON-NEGOTIABLE ENGINEERING RULES
 
 ## 1. Modularization
+
 One responsibility per module. Modules talk only through typed interfaces in
 `src/types.ts`. No circular imports. No module reaches into another module's
 internals.
@@ -115,6 +125,7 @@ matchcutter/
 ```
 
 ## 2. Skill, .md and master prompt files (create FIRST)
+
 Before any code, create `MASTER_PROMPT.md`, `CLAUDE.md`, `PLAN.md`, `TASKS.md`,
 `SESSION_LOG.md`, and every file in `skills/`. Each skill file has: Purpose,
 Rules, Code patterns (short), Pitfalls, Definition of Done. `CLAUDE.md` must
@@ -122,35 +133,41 @@ tell the assistant: "At session start read CLAUDE.md, TASKS.md, and only the
 skill file(s) needed for the current task."
 
 ## 3. Keep code under 600 lines
+
 - Hard limit: no file over 600 lines. Target: 150-300.
 - `scripts/check-lines.mjs` enforces it; run it before every commit.
 - If a file approaches 450 lines, split it before adding more.
 - Long data (filler text, font lists) goes in separate data files.
 
 ## 4. Task splitting
+
 Break the work into tasks small enough to finish in ONE session (about 1-3
 files, one testable outcome). Each task in `TASKS.md` has: ID, goal, files
 touched, inputs/outputs, acceptance test. Never start a task whose
 dependencies are unchecked. Do one task per session unless tasks are trivial.
 
 ## 5. Plan the project flow
+
 Write `PLAN.md` first, with a data-flow diagram in text:
 `input -> parser -> timeline -> (layout + render per frame) -> frames
-+ audio mixdown -> encoder -> Blob -> download`
-Phases (do them in order):
-- P0 Setup: repo, Vite, TS strict, lint, line-check script, all .md files, licenses
-- P1 Parser and types (with unit tests)
-- P2 Layout engine and filler text (unit-test the anchor math)
-- P3 Frame renderer (static single frame, unstyled UI, a canvas preview)
-- P4 Timeline + preview playback (animated preview without export)
-- P5 Audio synthesis + mixdown
-- P6 Encoding: WebM first (simplest), then MP4 via WebCodecs
-- P7 Full controls (aspect ratio, cuts/s, zoom, blur, sound, format)
-- P8 FUNCTIONAL FREEZE: all features work, tests pass, then and only then:
-- P9 Styling and responsive design (editorial/newspaper aesthetic, dark/light)
-- P10 Static pages, SEO meta tags, accessibility, deploy
+
+- audio mixdown -> encoder -> Blob -> download`
+  Phases (do them in order):
+
+* P0 Setup: repo, Vite, TS strict, lint, line-check script, all .md files, licenses
+* P1 Parser and types (with unit tests)
+* P2 Layout engine and filler text (unit-test the anchor math)
+* P3 Frame renderer (static single frame, unstyled UI, a canvas preview)
+* P4 Timeline + preview playback (animated preview without export)
+* P5 Audio synthesis + mixdown
+* P6 Encoding: WebM first (simplest), then MP4 via WebCodecs
+* P7 Full controls (aspect ratio, cuts/s, zoom, blur, sound, format)
+* P8 FUNCTIONAL FREEZE: all features work, tests pass, then and only then:
+* P9 Styling and responsive design (editorial/newspaper aesthetic, dark/light)
+* P10 Static pages, SEO meta tags, accessibility, deploy
 
 ## 6. Manage your session size
+
 - Never paste or re-read the whole codebase. Read `CLAUDE.md`, `TASKS.md`, the
   one relevant skill file, and only the files the task touches.
 - Reference modules by their interfaces in `types.ts`, not by their bodies.
@@ -163,26 +180,30 @@ Phases (do them in order):
 - Commit after each task with the message `T-<id>: <summary>`.
 
 ## 7. Functionality first, styling last
+
 Phases P0-P8 use browser-default styling only (plain HTML controls). No CSS
 work, animations, icons, or theming before the P8 functional freeze. Canvas
 output (the video) is the exception: its look is part of the functionality.
 
 ## 8. Free and open source only
+
 See "Legal and licensing rules". When unsure about a license, do not use the
 resource; pick an alternative or build it in-house.
 
 ## 9. Legally modifiable
+
 All code, fonts, and assets must permit modification and redistribution.
 Keep license headers and attribution where required (OFL, MIT). Ship a
 `NOTICE` or `docs/LICENSES.md` listing everything.
 
 # RENDERING DESIGN (guidance)
+
 - Define the anchor: focal word centred at (cx, cy) and drawn at a fixed
   pixel height. Per frame, pick a layout preset, then compute the text origin so
   the highlighted word's bounding box centre lands on the anchor. Use
   `ctx.measureText` for widths.
 - Each frame spec: `{ fontFamily, paperStyle, rotation, fillerLines, highlightStyle,
-  zoom, blur }`. Use a seeded PRNG so "Regenerate" gives new results and tests are
+zoom, blur }`. Use a seeded PRNG so "Regenerate" gives new results and tests are
   deterministic.
 - Never repeat the same layout twice in a row.
 - Render frames directly to canvas at the exported resolution and feed each
@@ -194,6 +215,7 @@ Keep license headers and attribution where required (OFL, MIT). Ship a
 - Await `document.fonts.load()` for all fonts before drawing.
 
 # DEFINITION OF DONE (whole project)
+
 - Typing `Markets jittery. ==TACO again==.` (focal text up to 23 chars)
   produces a downloadable video in under about 15 seconds on a mid-range laptop.
 - The highlighted word is pixel-aligned across all frames.
@@ -203,7 +225,9 @@ Keep license headers and attribution where required (OFL, MIT). Ship a
 - `docs/LICENSES.md` is complete and every entry is permissive.
 
 # FIRST ACTION
+
 Do NOT write app code yet. In this first session only:
+
 1. Create the folder structure and all .md/skill files described above.
 2. Fill `PLAN.md` and `TASKS.md` with detailed, ordered, session-sized tasks
    (aim for 25-40 tasks across P0-P10, each with acceptance tests).

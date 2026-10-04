@@ -19,7 +19,11 @@ const ignoreDirs = new Set(['node_modules', 'dist', '.git']);
 
 function walk(dir, out) {
   let entries;
-  try { entries = readdirSync(dir); } catch { return; }
+  try {
+    entries = readdirSync(dir);
+  } catch {
+    return;
+  }
   for (const e of entries) {
     if (ignoreDirs.has(e)) continue;
     const p = join(dir, e);
@@ -33,7 +37,9 @@ const files = [];
 for (const r of roots) walk(r, files);
 // also check top-level html/md
 for (const f of ['index.html', 'PLAN.md', 'TASKS.md', 'CLAUDE.md', 'MASTER_PROMPT.md']) {
-  try { if (statSync(f).isFile()) files.push(f); } catch {}
+  try {
+    if (statSync(f).isFile()) files.push(f);
+  } catch {}
 }
 
 let failed = false;

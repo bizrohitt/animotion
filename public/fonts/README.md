@@ -3,6 +3,7 @@
 This folder will contain WOFF2 files for OFL fonts only.
 
 Planned fonts (all SIL OFL 1.1, allow commercial use + modification):
+
 - Playfair Display — https://fonts.google.com/specimen/Playfair+Display
 - Libre Baskerville — https://fonts.google.com/specimen/Libre+Baskerville
 - Old Standard TT — https://fonts.google.com/specimen/Old+Standard+TT

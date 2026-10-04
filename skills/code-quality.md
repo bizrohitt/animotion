@@ -1,9 +1,11 @@
 # Skill: Code Quality (600-Line Rule, Naming, Testing, Commits)
 
 ## Purpose
+
 Keep MatchCutter modular, readable, and shippable across many small sessions with a hard 600-line file cap and strict typing.
 
 ## Rules
+
 1. **600-line hard limit:** No file over 600 lines. Target 150-300. `scripts/check-lines.mjs` fails CI if violated. Split at ~450 lines. Long data → separate `*.data.ts` files.
 2. **One responsibility per module:** A module does one thing, exposes a typed interface from `src/types.ts`. No circular imports. No reaching into another module's internals — use its exported API.
 3. **Strict TS:** `strict:true`, `noImplicitAny`, `noUnusedLocals` (or warn), `esModuleInterop`. All public functions have explicit return types. Prefer `unknown` over `any`.
@@ -17,7 +19,9 @@ Keep MatchCutter modular, readable, and shippable across many small sessions wit
 
 ```ts
 // prefer explicit types
-export function parseInput(raw: string): ParseResult { /* ... */ }
+export function parseInput(raw: string): ParseResult {
+  /* ... */
+}
 
 // split data
 // fillerText.data.ts  ← long array
@@ -31,12 +35,14 @@ for (const f of files) if (lines(f) > max) fail(`${f}: ${lines(f)} > ${max}`);
 ```
 
 ## Pitfalls
+
 - Letting `main.ts` grow into a god file — keep it <150 lines, wiring only; push logic into `ui/*`.
 - Importing across layers (e.g. `render` importing `ui`) — respect the DAG: `parser → layout → render → timeline → audio → encode → ui → main`.
 - Forgetting to run `check-lines` and shipping a 700-line file.
 - Testing canvas pixels in Vitest — test math/helpers instead; manual visual QA for pixels.
 
 ## Definition of Done
+
 - `npm run lint`, `npm test`, `node scripts/check-lines.mjs` all pass on every commit.
 - No file >600 lines; `main.ts` <150 lines.
 - No circular deps (`madge` or manual check).

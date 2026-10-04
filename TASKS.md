@@ -15,7 +15,7 @@ Legend: `ID` — `Phase` — `Status`
   - Outputs: `npm install` succeeds, `npm run dev` serves empty page, `npm run build` succeeds
   - Acceptance: `npx tsc --noEmit` passes with `strict:true`; Vite builds to `dist/`
 
-- [ ] **T-002 — Lint, format, line-check, test harness**
+- [x] **T-002 — Lint, format, line-check, test harness**
   - Files: `.eslintrc.*` / `eslint.config.*`, `.prettierrc`, `scripts/check-lines.mjs`, `vitest.config.ts`, `tests/smoke.test.ts`
   - Inputs: T-001
   - Outputs: lint/format/test scripts work; line-check fails on >600-line file
@@ -206,4 +206,5 @@ Legend: `ID` — `Phase` — `Status`
 ---
 
 ## Task Count: 27 tasks across 11 groups (P0-P10)
+
 ## Dependency Rule: never start a task if its Inputs row has any `[ ]` unchecked upstream.
