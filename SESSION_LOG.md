@@ -46,3 +46,9 @@
 - Decisions: `toggleMarkers` uses raw indices, unwrap if overlap with existing highlight, otherwise wrap trimmed selection.
 - Next: T-020 layout presets & filler data.
 - Bugs: none.
+
+## S08 — 2026-10-04 — T-020 layout presets & filler
+- Done: Added `layoutPresets.ts` (8 presets: broadsheet, ledger, gazette, dispatch, herald, courier, bulletin, chronicle) with 6 OFL fonts, 6 paper tints, varied rotation ±0.8-2.2°, 3 highlight styles. Added `fillerText.ts` with 32 filler sentences + 24 word bank + samples. Visible distinct presets, no consecutive repeat logic delegated to engine.
+- Verified: 8 presets (≥6), 32 sentences (≥20), only OFL fonts, `eslint`+`tsc`+`check-lines` OK, build OK.
+- Next: T-021 seeded PRNG + layout engine (no-repeat, anchor math).
+- Bugs: none.

@@ -49,7 +49,7 @@ Legend: `ID` — `Phase` — `Status`
 
 ## P2 — Layout Engine and Filler Text
 
-- [ ] **T-020 — Layout presets & data**
+- [x] **T-020 — Layout presets & data**
   - Files: `src/layout/layoutPresets.ts`, `src/layout/fillerText.ts` (data)
   - Inputs: `src/types.ts`, `src/config.ts`
   - Outputs: `LAYOUT_PRESETS[]` (fontFamily, paperStyle, rotation range, highlightStyle pool), `FILLER_SENTENCES[]` / word bank, font list (OFL: Playfair Display, Libre Baskerville, Old Standard TT, Special Elite, IM Fell, Courier Prime + fallbacks)
