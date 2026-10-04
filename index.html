@@ -8,10 +8,23 @@
       name="description"
       content="Turn a phrase with one highlighted word into a newspaper-clipping match cut video. 100% browser-only, no uploads."
     />
+    <meta property="og:title" content="MatchCutter — Text Match Cut Video Generator" />
+    <meta
+      property="og:description"
+      content="Pin one word, jitter the rest. Generate newspaper-clipping match cut videos in your browser — no server, no watermark."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://bizrohitt.github.io/animotion/" />
+    <meta name="theme-color" content="#fdfbf7" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23b91c1c'/%3E%3Ctext x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-family='serif' font-size='18' fill='white'%3EM%3C/text%3E%3C/svg%3E"
+    />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="stylesheet" href="/styles/main.css" />
   </head>
   <body>
+    <a href="#main" class="skip-link">Skip to content</a>
     <header class="site-head">
       <div class="wrap">
         <div class="brand">Match<span>Cutter</span></div>
@@ -23,7 +36,7 @@
         </nav>
       </div>
     </header>
-    <main>
+    <main id="main">
       <div class="wrap">
         <div class="hero">
           <h1>Make words collide.</h1>
@@ -121,7 +134,13 @@
           </section>
           <section class="card preview-wrap">
             <h2>Preview</h2>
-            <canvas id="preview" width="540" height="960"></canvas>
+            <canvas
+              id="preview"
+              width="540"
+              height="960"
+              aria-label="Video preview"
+              role="img"
+            ></canvas>
             <div class="progress" id="progressWrap">
               <div class="progress-bar" id="progressBar"></div>
             </div>

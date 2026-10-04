@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>How it works — MatchCutter</title>
+    <meta
+      name="description"
+      content="How MatchCutter turns one focal word into a match-cut video entirely in your browser."
+    />
+    <meta property="og:title" content="How it works — MatchCutter" />
+    <meta
+      property="og:description"
+      content="How MatchCutter turns one focal word into a match-cut video entirely in your browser."
+    />
+    <meta property="og:type" content="website" />
+    <meta name="theme-color" content="#fdfbf7" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23b91c1c'/%3E%3Ctext x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-family='serif' font-size='18' fill='white'%3EM%3C/text%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="/styles/main.css" />
+  </head>
+  <body>
+    <a href="#main" class="skip-link">Skip to content</a>
+    <header class="site-head">
+      <div class="wrap">
+        <div class="brand">Match<span>Cutter</span></div>
+        <nav class="site-nav" aria-label="Primary">
+          <a href="/">Create</a>
+          <a href="/pages/how.html" aria-current="page">How it works</a>
+          <a href="/pages/faq.html">FAQ</a>
+          <a href="/pages/about.html">About</a>
+        </nav>
+      </div>
+    </header>
+    <main id="main">
+      <div class="wrap">
+        <article class="page">
+          <h1>How it works</h1>
+          <p class="meta">100% browser-only. No uploads, no servers, no watermark.</p>
+          <h2>1 — You write a phrase</h2>
+          <p>
+            Wrap one word with <code>==double equals==</code>. Keep it to 23 characters max — that’s
+            your focal word. It’s the anchor. Everything else is allowed to wobble.
+          </p>
+          <h2>2 — We build a timeline</h2>
+          <p>
+            MatchCutter slices 2 seconds into frames at your chosen cuts-per-second (4–30, default
+            12). Each frame gets a different paper grain, font (six OFL faces), rotation (±2°),
+            filler sentence, and highlight. A pure function picks the next layout — never the same
+            preset twice in a row — using a seeded mulberry32 PRNG so Regenerate is repeatable.
+          </p>
+          <h2>3 — The anchor stays put</h2>
+          <p>
+            Every frame measures your focal word with <code>Canvas measureText</code> and offsets it
+            so its centre lands exactly at <code>(cx, cy)</code>. The paper rotates and zooms around
+            that point, but the word itself is pixel-aligned. That’s the match cut.
+          </p>
+          <h2>4 — Sound is synthesized</h2>
+          <p>
+            Six effects — paper shuffle, camera shutter, film advance, polaroid, flash pop, none —
+            are built from noise, filters and envelopes in Web Audio. No samples are fetched.
+            Mixdown schedules one burst per cut in an OfflineAudioContext at 48 kHz.
+          </p>
+          <h2>5 — Export</h2>
+          <p>
+            Frames are painted to a hidden canvas, captured via <code>captureStream</code> +
+            MediaRecorder (WebM) or VideoEncoder + mp4-muxer (MP4). Audio is mixed in. The encoder
+            prefers MP4 when WebCodecs is available, otherwise falls back to WebM. Full resolution
+            is 1080p per your aspect (9:16, 1:1, 16:9); preview is half-res for speed.
+          </p>
+          <h2>Why browser-only?</h2>
+          <p>
+            No queue, no cost, no privacy trade. Close the tab, your phrase is gone. Offline after
+            the first load thanks to static assets. If VideoEncoder is missing, you still get WebM.
+          </p>
+          <p><a href="/">← Back to creator</a></p>
+        </article>
+      </div>
+    </main>
+    <footer class="site-foot">
+      <div class="wrap">
+        <div>© 2026 MatchCutter — Browser-only. <a href="/pages/privacy.html">Privacy</a></div>
+        <nav class="foot-nav">
+          <a href="/pages/faq.html">FAQ</a><a href="/pages/terms.html">Terms</a>
+        </nav>
+      </div>
+    </footer>
+  </body>
+</html>

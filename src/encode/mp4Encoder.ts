@@ -59,8 +59,8 @@ export async function encodeMP4(
       framerate: fps,
     });
   } catch (e) {
-    // eslint-disable-next-line
-    throw new Error(`VideoEncoder configure failed for ${videoCodec}: ${String(e)}`, {
+    throw new Error(`VideoEncoder configure failed for ${videoCodec}`, {
+      // eslint-disable-next-line preserve-caught-error
       cause: e as Error,
     });
   }

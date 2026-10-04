@@ -185,19 +185,19 @@ Legend: `ID` — `Phase` — `Status`
 
 ## P10 — Static Pages, SEO, Accessibility, Deploy
 
-- [ ] **T-100 — Static pages (original copy)**
+- [x] **T-100 — Static pages (original copy)**
   - Files: `pages/how.html`, `pages/faq.html`, `pages/about.html`, `pages/privacy.html`, `pages/terms.html`
   - Inputs: T-091
   - Outputs: 5 short original pages sharing header/footer; zero tracking, no analytics, privacy states 100% client-side
   - Acceptance: all pages reachable from nav/footer; copy is original (no clone of textmatchcut.app); valid HTML
 
-- [ ] **T-101 — SEO + a11y**
+- [x] **T-101 — SEO + a11y**
   - Files: `index.html` (meta), `pages/*.html` (meta), `styles/*.css` (a11y tweaks)
   - Inputs: T-100
   - Outputs: `<title>`, meta description, OG tags, favicon, `lang`, alt on images, ARIA on controls, keyboard nav, skip link
   - Acceptance: Lighthouse SEO ≥90, A11y ≥90; keyboard-only flow works; screen-reader labels present
 
-- [ ] **T-102 — Deploy + final LICENSES audit**
+- [x] **T-102 — Deploy + final LICENSES audit**
   - Files: `vite.config.ts` (base), `docs/LICENSES.md` (final), `README.md`
   - Inputs: all prior
   - Outputs: `npm run build` → `dist/` deployable to GitHub Pages/Cloudflare Pages; README with usage + license + deploy URL

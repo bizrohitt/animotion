@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About — MatchCutter</title>
+    <meta
+      name="description"
+      content="About MatchCutter: an editorial, browser-only homage to the match cut."
+    />
+    <meta property="og:title" content="About — MatchCutter" />
+    <meta
+      property="og:description"
+      content="About MatchCutter: an editorial, browser-only homage to the match cut."
+    />
+    <meta property="og:type" content="website" />
+    <meta name="theme-color" content="#fdfbf7" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23b91c1c'/%3E%3Ctext x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-family='serif' font-size='18' fill='white'%3EM%3C/text%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="/styles/main.css" />
+  </head>
+  <body>
+    <a href="#main" class="skip-link">Skip to content</a>
+    <header class="site-head">
+      <div class="wrap">
+        <div class="brand">Match<span>Cutter</span></div>
+        <nav class="site-nav" aria-label="Primary">
+          <a href="/">Create</a><a href="/pages/how.html">How it works</a
+          ><a href="/pages/faq.html">FAQ</a
+          ><a href="/pages/about.html" aria-current="page">About</a>
+        </nav>
+      </div>
+    </header>
+    <main id="main">
+      <div class="wrap">
+        <article class="page">
+          <h1>About</h1>
+          <p class="meta">A tiny tool that treats a word like a prop.</p>
+          <p>
+            MatchCutter started with a simple observation: a single word, held still while its
+            context flickers, feels louder than a paragraph. Newspaper clippings are perfect for
+            this — heavy ink, rough paper, a little skew. The match cut does the rest.
+          </p>
+          <p>
+            The whole thing runs in your tab. There is no server, no database, no account. The code
+            is Vite + TypeScript, Canvas2D for rendering, WebCodecs + mp4-muxer (MIT) for MP4,
+            MediaRecorder for WebM, Web Audio for sound. Fonts are OFL (Playfair, Libre Baskerville,
+            Old Standard, Special Elite, IM Fell, Courier Prime) and paper is noise, not images. You
+            can view source, read the procedural grain, and know exactly what runs.
+          </p>
+          <h2>Editorial intent</h2>
+          <p>
+            We wanted a tool that feels like a desk, not a dashboard. Warm paper, charcoal ink, a
+            serif display, generous margins, no neon. If a control doesn’t need to be there, it
+            isn’t. Dark mode follows your system preference.
+          </p>
+          <h2>No tracking, by design</h2>
+          <p>
+            No analytics, no cookies, no pixel. The SupportGate module exists but is disabled — it
+            never renders, never fetches, never measures. If the maintainer ever enables it, it will
+            be a visible placeholder, not a tracker. See <a href="/pages/privacy.html">Privacy</a>.
+          </p>
+          <h2>Credits</h2>
+          <p>
+            Built for the web, for writers, editors, meme-makers and anyone who has wanted to shout
+            <code>==this==</code> and hold it still. MIT licensed. Patches welcome.
+          </p>
+          <p><a href="/">← Start cutting</a></p>
+        </article>
+      </div>
+    </main>
+    <footer class="site-foot">
+      <div class="wrap">
+        <div>© 2026 MatchCutter — MIT</div>
+        <nav class="foot-nav">
+          <a href="/pages/privacy.html">Privacy</a><a href="/pages/terms.html">Terms</a>
+        </nav>
+      </div>
+    </footer>
+  </body>
+</html>

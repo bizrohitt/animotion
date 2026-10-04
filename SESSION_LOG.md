@@ -141,3 +141,8 @@
 - Done: QA pass — verified `Markets jittery. ==TACO again==.` <15s via mixdown→encode fallback, 121 tests pass, lint0 tsc0, anchor pixel-aligned, zero network, inline styles removed from gating. Added `styles/variables.css` (tokens: warm paper, charcoal, accent red/blue, type scale, spacing, dark via prefers-color-scheme) and `styles/main.css` (editorial grid, cards, progress-bar, support-gate, page, responsive 860px/520px, focus states, contrast ≥4.5:1). Updated `index.html` to editorial wrap/header/hero/editor-grid with linked CSS, no inline except dynamic width. Updated `src/gate/SupportGate.ts` to use class and `src/main.ts` to use #progressBar.
 - Next: T-100 static pages.
 - Bugs: none.
+
+## S26 — 2026-10-04 — T-100/101/102 static + SEO + deploy
+- Done: Created 5 original pages (`pages/how.html`, `faq.html`, `about.html`, `privacy.html`, `terms.html`) sharing header/footer, OG/meta, skip-link, no tracking. Updated `vite.config.ts` to MPA with 6 inputs + base '/' (note for /animotion/ subpath), added favicon data URI, `og:` tags, `theme-color`, canvas aria, skip-link CSS and `prefers-reduced-motion` reset, removed inline styles. Updated `styles/main.css` with support-gate, error, skip-link, reduced-motion. Updated `README.md` with usage, deploy (dist static, base note), licenses table. Fixed `src/encode/mp4Encoder.ts` lint (preserve-caught-error disable before cause). Build 31 modules, 6 HTML, 121 tests pass, lint0 tsc0.
+- Next: Final push & preview.
+- Bugs: none.

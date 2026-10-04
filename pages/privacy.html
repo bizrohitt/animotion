@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Privacy — MatchCutter</title>
+    <meta
+      name="description"
+      content="MatchCutter privacy: everything happens in your browser, no data leaves."
+    />
+    <meta property="og:title" content="Privacy — MatchCutter" />
+    <meta
+      property="og:description"
+      content="MatchCutter privacy: everything happens in your browser, no data leaves."
+    />
+    <meta property="og:type" content="website" />
+    <meta name="theme-color" content="#fdfbf7" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23b91c1c'/%3E%3Ctext x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-family='serif' font-size='18' fill='white'%3EM%3C/text%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="/styles/main.css" />
+  </head>
+  <body>
+    <a href="#main" class="skip-link">Skip to content</a>
+    <header class="site-head">
+      <div class="wrap">
+        <div class="brand">Match<span>Cutter</span></div>
+        <nav class="site-nav" aria-label="Primary">
+          <a href="/">Create</a><a href="/pages/how.html">How it works</a
+          ><a href="/pages/faq.html">FAQ</a><a href="/pages/about.html">About</a>
+        </nav>
+      </div>
+    </header>
+    <main id="main">
+      <div class="wrap">
+        <article class="page">
+          <h1>Privacy</h1>
+          <p class="meta">Updated 2026-10-04</p>
+          <p>
+            MatchCutter is 100% client-side. Your phrase, timeline, audio mix and exported video
+            never leave your browser. There is no backend, no user account, no storage.
+          </p>
+          <h2>Data we do not collect</h2>
+          <p>
+            No analytics, no ads, no trackers, no cookies, no localStorage for personal data, no
+            third-party fonts or CDNs. Fonts are self-hosted, paper textures are generated, sounds
+            are synthesized. SupportGate, if enabled, is a local placeholder with no network call.
+          </p>
+          <h2>What stays on your device</h2>
+          <ul>
+            <li>Your input text exists only in the input element and in-memory timeline.</li>
+            <li>
+              Encoded video is a Blob URL created with <code>URL.createObjectURL</code> and revoked
+              after download.
+            </li>
+            <li>
+              If you change controls, values live only in the page; reload resets to defaults.
+            </li>
+          </ul>
+          <h2>Network requests</h2>
+          <p>
+            On first load the browser fetches <code>index.html</code>, <code>styles/main.css</code>,
+            <code>src/main.ts</code> (bundled as JS) and OFL fonts. During Generate, Regenerate,
+            Mixdown and Export zero additional requests are made. You can verify in DevTools →
+            Network: filter to Fetch/XHR, then hit Generate → Download — nothing new should appear.
+          </p>
+          <h2>Third parties</h2>
+          <p>None. No embedded videos, maps, or analytics.</p>
+          <h2>Contact</h2>
+          <p>
+            Questions? Open an issue on the project repository or email the maintainer listed in the
+            README.
+          </p>
+          <p><a href="/">← Back to creator</a></p>
+        </article>
+      </div>
+    </main>
+    <footer class="site-foot">
+      <div class="wrap">
+        <div>© 2026 MatchCutter</div>
+        <nav class="foot-nav">
+          <a href="/pages/terms.html">Terms</a><a href="/pages/faq.html">FAQ</a>
+        </nav>
+      </div>
+    </footer>
+  </body>
+</html>

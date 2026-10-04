@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FAQ — MatchCutter</title>
+    <meta
+      name="description"
+      content="Common questions about MatchCutter: formats, browsers, privacy and limits."
+    />
+    <meta property="og:title" content="FAQ — MatchCutter" />
+    <meta
+      property="og:description"
+      content="Common questions about MatchCutter: formats, browsers, privacy and limits."
+    />
+    <meta property="og:type" content="website" />
+    <meta name="theme-color" content="#fdfbf7" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23b91c1c'/%3E%3Ctext x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-family='serif' font-size='18' fill='white'%3EM%3C/text%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="/styles/main.css" />
+  </head>
+  <body>
+    <a href="#main" class="skip-link">Skip to content</a>
+    <header class="site-head">
+      <div class="wrap">
+        <div class="brand">Match<span>Cutter</span></div>
+        <nav class="site-nav" aria-label="Primary">
+          <a href="/">Create</a><a href="/pages/how.html">How it works</a
+          ><a href="/pages/faq.html" aria-current="page">FAQ</a
+          ><a href="/pages/about.html">About</a>
+        </nav>
+      </div>
+    </header>
+    <main id="main">
+      <div class="wrap">
+        <article class="page">
+          <h1>FAQ</h1>
+          <h2>What exactly is a match cut?</h2>
+          <p>
+            A cut where one element stays in the same screen position while everything around it
+            changes. Here the focal word you mark with <code>== ==</code> stays centered; paper,
+            typeface, rotation and filler text jump each frame.
+          </p>
+          <h2>Why is the focal word limited to 23 characters?</h2>
+          <p>
+            So it fits at 6% of frame width without overflowing at large rotations. Longer strings
+            get a validation error and a red counter.
+          </p>
+          <h2>What formats can I export?</h2>
+          <p>
+            MP4 (H.264 + AAC via WebCodecs + mp4-muxer) when your browser supports VideoEncoder;
+            otherwise WebM (VP9) via MediaRecorder. You choose a preference, we fall back
+            automatically. Both are playable in Chrome, VLC, QuickTime (MP4) or Chrome/Firefox
+            (WebM).
+          </p>
+          <h2>Which browsers work?</h2>
+          <p>
+            Latest Chrome/Edge handle MP4 fastest. Firefox and older Chrome fall back to WebM.
+            Safari can preview but may not encode — you’ll get a clear error. All browsers can
+            preview the animation; encoding is the only feature-gated part. No install needed.
+          </p>
+          <h2>Is anything uploaded?</h2>
+          <p>
+            No. Fonts are self-hosted OFL, paper is procedural noise, sound is synthesized. Open
+            DevTools Network: zero requests during Generate or Download. Everything is Blob URLs in
+            memory.
+          </p>
+          <h2>Can I use this commercially?</h2>
+          <p>
+            Yes. The app is MIT, no watermark, no attribution required (though appreciated). Your
+            phrase is yours. See <a href="/pages/terms.html">Terms</a>.
+          </p>
+          <h2>Why 12 cuts per second by default?</h2>
+          <p>
+            It’s the sweet spot: fast enough to feel like a cut, slow enough to read the focal word.
+            You can push to 4 (contemplative) or 30 (machine-gun). Zoom and blur ramp in the last
+            20% of the timeline for a subtle push-in.
+          </p>
+          <h2>My video is blank / download fails?</h2>
+          <p>
+            Check that you have exactly one <code>==word==</code>. Try Regenerate to re-seed, or
+            toggle format to WebM. If you’re on iOS Safari, WebCodecs is not yet available — WebM
+            may also be limited.
+          </p>
+          <p><a href="/">← Back to creator</a></p>
+        </article>
+      </div>
+    </main>
+    <footer class="site-foot">
+      <div class="wrap">
+        <div>© 2026 MatchCutter</div>
+        <nav class="foot-nav">
+          <a href="/pages/privacy.html">Privacy</a><a href="/pages/terms.html">Terms</a>
+        </nav>
+      </div>
+    </footer>
+  </body>
+</html>
