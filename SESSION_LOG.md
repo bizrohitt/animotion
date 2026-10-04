@@ -63,3 +63,9 @@
 - Done: Extended `fillerText.ts` with `generateFillerLines(rng,count,avgWords)` (sentence mode or synthetic words, no consecutive repeat, ±2 word count). Added `tests/filler.test.ts` (7 tests) for count, determinism, no-repeat (20/30), word count ±2, zero handling, bank check, seed variance. All 56 tests pass.
 - Next: T-030 procedural paper + highlight styles.
 - Bugs: none.
+
+## S11 — 2026-10-04 — T-030 paper + highlight
+- Done: Added `src/render/paper.ts` (hexToRgb, drawPaper with tint+grain seeded noise) and `src/render/highlight.ts` (getHighlightBBox, drawHighlight for marker/underline/box, rounded/ wavy). Added `tests/render-paper.test.ts` (8 tests) for hex, paper diff per style, determinism, grain 0, bbox math, 3 styles distinct.
+- Verified: Paper visibly different per tint, highlight 3 styles render without throw, bbox math within 0.5px, lint/tsc/test/lines OK.
+- Next: T-031 zoom & blur utilities.
+- Bugs: none.

@@ -69,7 +69,7 @@ Legend: `ID` — `Phase` — `Status`
 
 ## P3 — Frame Renderer
 
-- [ ] **T-030 — Procedural paper + highlight styles**
+- [x] **T-030 — Procedural paper + highlight styles**
   - Files: `src/render/paper.ts`, `src/render/highlight.ts`, `tests/render-paper.test.ts` (logic only)
   - Inputs: `src/types.ts`, `src/config.ts`
   - Outputs: `drawPaper(ctx, w, h, style, seed)` (noise + tint, no image fetch), `drawHighlight(ctx, bbox, style)` (marker/underline/box)
