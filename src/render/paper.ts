@@ -164,6 +164,7 @@ export function drawPaper(
 }
 
 function hashString(s: string): number {
+  // FNV-1a 32-bit — fast, deterministic, good distribution for paper seed mixing
   let h = 2166136261;
   for (let i = 0; i < s.length; i++) {
     h ^= s.charCodeAt(i);

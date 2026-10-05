@@ -30,7 +30,11 @@ export class NoopGate implements SupportGate {
   }
 }
 
-// Singleton disabled by default
+// Singleton disabled by default — to enable, in src/main.ts add:
+// import { supportGate } from './gate/SupportGate.ts';
+// const gateEl = document.getElementById('gate');
+// if (gateEl) { supportGate.enable(); supportGate.render(gateEl); }
+// Keeps no-op until maintainer opts in; zero network, zero watermark.
 export const supportGate: SupportGate = new NoopGate();
 
 // Helper to check that disabled gate emits no network requests
