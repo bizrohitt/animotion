@@ -9,7 +9,9 @@ export function updateCounter(input: HTMLInputElement, counter: HTMLElement): vo
   const inside = input.value.match(/==(.+?)==/);
   const len = res.ok ? res.parsed.focalWord.length : inside ? inside[1].trim().length : 0;
   counter.textContent = `${len}/${LIMITS.focalMaxChars}`;
-  counter.style.color = len > LIMITS.focalMaxChars ? 'crimson' : '';
+  // M11 minor: class toggle instead of inline style for dark-mode contrast
+  counter.classList.toggle('over', len > LIMITS.focalMaxChars);
+  counter.classList.toggle('over-limit', len > LIMITS.focalMaxChars); // alias for audit
 }
 
 export function validateInput(input: HTMLInputElement, errorEl: HTMLElement | null): boolean {

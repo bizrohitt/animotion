@@ -43,12 +43,12 @@
 
 | Font              | License     | Source                                              | File                                    | Status  |
 | ----------------- | ----------- | --------------------------------------------------- | --------------------------------------- | ------- |
-| Playfair Display  | SIL OFL 1.1 | https://fonts.google.com/specimen/Playfair+Display  | `public/fonts/PlayfairDisplay-*.woff2`  | Planned |
-| Libre Baskerville | SIL OFL 1.1 | https://fonts.google.com/specimen/Libre+Baskerville | `public/fonts/LibreBaskerville-*.woff2` | Planned |
-| Old Standard TT   | SIL OFL 1.1 | https://fonts.google.com/specimen/Old+Standard+TT   | `public/fonts/OldStandardTT-*.woff2`    | Planned |
-| Special Elite     | SIL OFL 1.1 | https://fonts.google.com/specimen/Special+Elite     | `public/fonts/SpecialElite-*.woff2`     | Planned |
-| IM Fell English   | SIL OFL 1.1 | https://fonts.google.com/specimen/IM+Fell+English   | `public/fonts/IMFellEnglish-*.woff2`    | Planned |
-| Courier Prime     | SIL OFL 1.1 | https://fonts.google.com/specimen/Courier+Prime     | `public/fonts/CourierPrime-*.woff2`     | Planned |
+| Playfair Display  | SIL OFL 1.1 | https://fonts.google.com/specimen/Playfair+Display  | `public/fonts/PlayfairDisplay-400.woff2`, `-700.woff2` (22/23 KB) | **Shipped 2026-10-05** via `@fontsource/playfair-display` 5.3.0 (OFL) |
+| Libre Baskerville | SIL OFL 1.1 | https://fonts.google.com/specimen/Libre+Baskerville | `public/fonts/LibreBaskerville-400.woff2`, `-700.woff2` (20 KB each) | **Shipped 2026-10-05** via `@fontsource/libre-baskerville` 5.3.0 |
+| Old Standard TT   | SIL OFL 1.1 | https://fonts.google.com/specimen/Old+Standard+TT   | `public/fonts/OldStandardTT-400.woff2`, `-700.woff2` (24 KB each) | **Shipped 2026-10-05** via `@fontsource/old-standard-tt` 5.3.0 |
+| Special Elite     | SIL OFL 1.1 | https://fonts.google.com/specimen/Special+Elite     | `public/fonts/SpecialElite-400.woff2` (53 KB) | **Shipped 2026-10-05** via `@fontsource/special-elite` 5.3.0 |
+| IM Fell English   | SIL OFL 1.1 | https://fonts.google.com/specimen/IM+Fell+English   | `public/fonts/IMFellEnglish-400.woff2` (59 KB) | **Shipped 2026-10-05** via `@fontsource/im-fell-english` 5.3.0 |
+| Courier Prime     | SIL OFL 1.1 | https://fonts.google.com/specimen/Courier+Prime     | `public/fonts/CourierPrime-400.woff2`, `-700.woff2` (19 KB each) | **Shipped 2026-10-05** via `@fontsource/courier-prime` 5.3.0 |
 
 > Keep OFL license text in `public/fonts/OFL.txt` and retain attribution per font.
 
@@ -65,7 +65,8 @@
 - [x] `mp4-muxer` 5.2.2 MIT verified 2026-10-04 (`npm view mp4-muxer license` → MIT, deprecated → mediabunny MPL-2.0 is successor, also allowed)
 - [x] `jszip` 3.10.2 (MIT OR GPL-3.0) MIT chosen verified 2026-10-04 (`npm view jszip license` → MIT/GPL)
 - [x] `vite-plugin-pwa` 2.0.0 MIT verified 2026-10-04 (`npm view vite-plugin-pwa license` → MIT)
-- [ ] Font OFL texts copied to `public/fonts/OFL.txt` and attributed (at font install)
+- [x] Font OFL texts copied to `public/fonts/OFL.txt` and attributed — 6 families woff2 shipped 2026-10-05, `@font-face` in `styles/variables.css`, preload in `index.html` (no Google Fonts network)
+- [x] Fonts self-hosted verified 2026-10-05 — `ls public/fonts/*.woff2` 10 files 300 KB, `curl -I /fonts/` no googleapis, `document.fonts.check` passes offline
 - [x] No GPL/AGPL/LGPL dependency present (`npm ls` verified 2026-10-04 — jszip dual used as MIT)
 - [x] All versions pinned and table updated (Vite 8.3.2, TS 5.9.2, ESLint 10.12.0, Prettier 3.9.9, Vitest 5.0.3, mp4-muxer 5.2.2, vite-plugin-pwa 2.0.0, jszip 3.10.2)
 

@@ -5,3 +5,5 @@ coverage
 .env.*
 .DS_Store
 *.log
+# audit reports (generated, keep in docs/reports but don't require commit)
+docs/reports/

@@ -33,6 +33,12 @@
     "vitest": "^5.0.3"
   },
   "dependencies": {
+    "@fontsource/courier-prime": "^5.3.0",
+    "@fontsource/im-fell-english": "^5.3.0",
+    "@fontsource/libre-baskerville": "^5.3.0",
+    "@fontsource/old-standard-tt": "^5.3.0",
+    "@fontsource/playfair-display": "^5.3.0",
+    "@fontsource/special-elite": "^5.3.0",
     "jszip": "^3.10.2",
     "mp4-muxer": "^5.2.2"
   }

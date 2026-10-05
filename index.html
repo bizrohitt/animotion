@@ -25,7 +25,21 @@
       rel="icon"
       href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23b91c1c'/%3E%3Ctext x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-family='serif' font-size='18' fill='white'%3EM%3C/text%3E%3C/svg%3E"
     />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <!-- OFL self-hosted fonts — no Google Fonts request (offline, M5) — preload critical 400 weights -->
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="/fonts/PlayfairDisplay-400.woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="/fonts/LibreBaskerville-400.woff2"
+      crossorigin
+    />
     <link rel="stylesheet" href="/styles/main.css" />
   </head>
   <body>

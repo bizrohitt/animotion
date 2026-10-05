@@ -42,10 +42,14 @@ export async function encodeWebM(
   const stream = (
     canvas as unknown as { captureStream: (fps: number) => MediaStream }
   ).captureStream(fps);
-  // Mix audio if provided
+  // Mix audio if provided — M6: ensure AudioContext resumes from suspended (autoplay policy)
   let audioCtx: AudioContext | null = null;
   if (audioBuffer) {
     audioCtx = new AudioContext({ sampleRate: audioBuffer.sampleRate });
+    if (audioCtx.state === 'suspended') {
+      // best-effort resume; encode still proceeds if it stays suspended (silent WebM audio)
+      void audioCtx.resume().catch(() => {});
+    }
     const dest = audioCtx.createMediaStreamDestination();
     const src = audioCtx.createBufferSource();
     src.buffer = audioBuffer;

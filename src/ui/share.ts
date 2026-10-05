@@ -27,25 +27,16 @@ export function buildShareURL(phrase: string, base = window.location.href): stri
 
 export async function copyShareLink(phrase: string): Promise<boolean> {
   const text = buildShareURL(phrase);
+  // M7: prefer modern clipboard; deprecated execCommand removed — if denied, caller shows URL for manual copy
   try {
     if (navigator.clipboard?.writeText) {
       await navigator.clipboard.writeText(text);
       return true;
     }
   } catch {
-    // fallback
+    // permission denied or insecure context
   }
-  try {
-    const ta = document.createElement('textarea');
-    ta.value = text;
-    ta.style.position = 'fixed';
-    ta.style.opacity = '0';
-    document.body.appendChild(ta);
-    ta.select();
-    const ok = document.execCommand('copy');
-    ta.remove();
-    return ok;
-  } catch {
-    return false;
-  }
+  // No execCommand fallback (deprecated). Return false so UI can show share URL for manual copy.
+  // Legacy fallback removed per audit M7 — execCommand is disabled in modern Chrome.
+  return false;
 }

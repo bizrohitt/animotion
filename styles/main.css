@@ -156,10 +156,15 @@ select:focus {
   text-align: right;
   margin-top: 2px;
 }
-.counter.over {
+.counter.over,
+.counter.over-limit {
   color: var(--accent);
   font-weight: 700;
 }
+.example-btn {
+  /* Mi8: replaces inline marginRight/marginBottom — gap on .examples handles spacing */
+}
+
 
 /* Buttons */
 .btn {

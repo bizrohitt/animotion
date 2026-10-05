@@ -102,9 +102,9 @@ export function drawFrame(
   const prefixW = ctx.measureText(prefix).width;
   const focalW = ctx.measureText(parsed.focalWord).width;
   const bbox = getHighlightBBox(originX, originY, prefixW, focalW, fontSize);
-  // Adjust bbox y for middle baseline: getHighlightBBox expects baseline, we used middle
-  // Our bbox's y was baseline - fontSize; for middle we need cy - fontSize*0.475
-  // Patch: recompute y for middle
+  // Mi4: getHighlightBBox assumes alphabetic baseline (y = baseline - fontSize). We use 'middle' baseline
+  // where originY is center. So y = cy - fontSize*0.5 (+0.05 descender fudge for marker bleed).
+  // 0.5 = half height to top, 0.05 = 5% descender pad so highlight sits slightly below center.
   const correctedBBox = {
     ...bbox,
     y: originY - fontSize * 0.5 + fontSize * 0.05,

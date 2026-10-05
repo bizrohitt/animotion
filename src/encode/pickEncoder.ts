@@ -1,6 +1,6 @@
 // src/encode/pickEncoder.ts — choose best encoder (MP4 via WebCodecs, fallback WebM)
 
-import type { Timeline, ParsedInput, RenderDims } from '../types.ts';
+import type { Timeline, ParsedInput, RenderDims, ExportQuality } from '../types.ts';
 import { encodeWebM, isWebMSupported } from './webmEncoder.ts';
 import { encodeMP4, isMP4Supported } from './mp4Encoder.ts';
 
@@ -12,6 +12,7 @@ export type EncodeFn = (
     fps: number;
     audioBuffer?: AudioBuffer | null;
     onProgress?: (r: number) => void;
+    quality?: ExportQuality;
   },
 ) => Promise<Blob>;
 
@@ -39,9 +40,23 @@ export async function encodeWithFallback(
     fps: number;
     audioBuffer?: AudioBuffer | null;
     onProgress?: (r: number) => void;
+    quality?: ExportQuality;
   },
 ): Promise<{ blob: Blob; mimeType: string; ext: string }> {
   const pick = pickEncoder();
-  const blob = await pick.fn(timeline, parsed, opts);
-  return { blob, mimeType: pick.mimeType, ext: pick.ext };
+  try {
+    const blob = await pick.fn(timeline, parsed, opts);
+    return { blob, mimeType: pick.mimeType, ext: pick.ext };
+  } catch (e) {
+    // M8: auto-fallback to the other encoder instead of surfacing to caller
+    const fallbackFn = pick.ext === 'mp4' ? encodeWebM : encodeMP4;
+    const fallbackExt = pick.ext === 'mp4' ? 'webm' : 'mp4';
+    const fallbackMime = fallbackExt === 'mp4' ? 'video/mp4' : 'video/webm';
+    try {
+      const blob = await (fallbackFn as unknown as EncodeFn)(timeline, parsed, opts);
+      return { blob, mimeType: fallbackMime, ext: fallbackExt };
+    } catch {
+      throw e;
+    }
+  }
 }

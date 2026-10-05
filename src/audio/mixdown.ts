@@ -42,6 +42,13 @@ export async function mixdown(
   }
 
   const ctx = new Ctx(1, len, sampleRate);
+  // M6: OfflineAudioContext doesn't need resume, but some browsers suspend; ensure running if interface exposes it
+  try {
+    const maybe = ctx as unknown as { state?: string; resume?: () => Promise<void> };
+    if (maybe.state === 'suspended' && maybe.resume) await maybe.resume();
+  } catch {
+    // ignore
+  }
   const fn = getEffectFn(effect);
 
   for (const frame of timeline) {

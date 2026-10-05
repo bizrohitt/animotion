@@ -12,8 +12,7 @@ export function renderExamples(container: HTMLElement, onPick: (text: string) =>
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.textContent = prompt;
-    btn.style.marginRight = '8px';
-    btn.style.marginBottom = '4px';
+    btn.className = 'example-btn';
     btn.addEventListener('click', () => onPick(prompt));
     container.appendChild(btn);
   }
