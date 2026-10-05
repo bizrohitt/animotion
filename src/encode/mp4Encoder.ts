@@ -48,9 +48,11 @@ export async function encodeMP4(
     error: (e) => console.error('VideoEncoder error', e),
   });
 
-  // Bitrate: 6 Mbps for 1080p, 16 Mbps for 4K (crisp text needs high)
-  const is4K = width >= 3000 || height >= 3000 || width * height >= 3840 * 2160;
-  const bitrate = is4K ? 16_000_000 : 6_000_000;
+  // Bitrate: 2.5 Mbps HD, 6 Mbps FHD, 16 Mbps 4K (crisp text needs high)
+  const area = width * height;
+  const is4K = width >= 3000 || height >= 3000 || area >= 3840 * 2160;
+  const isHD = area <= 1280 * 720;
+  const bitrate = is4K ? 16_000_000 : isHD ? 2_500_000 : 6_000_000;
   const videoCodec = 'avc1.4d002a';
   try {
     videoEncoder.configure({

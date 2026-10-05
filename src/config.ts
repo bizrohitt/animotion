@@ -26,11 +26,16 @@ export const ASPECT_DIMS: Record<AspectRatio, { width: number; height: number }>
   '16:9': { width: 1920, height: 1080 },
 };
 
-// Full publishing sizes — 1080p (FHD) is ASPECT_DIMS, 4K is 2×
+// Full publishing sizes — 720p (HD), 1080p (FHD), 4K (UHD 2×)
 export const EXPORT_DIMS: Record<
   ExportQuality,
   Record<AspectRatio, { width: number; height: number }>
 > = {
+  '720p': {
+    '9:16': { width: 720, height: 1280 },
+    '1:1': { width: 720, height: 720 },
+    '16:9': { width: 1280, height: 720 },
+  },
   '1080p': {
     '9:16': { width: 1080, height: 1920 },
     '1:1': { width: 1080, height: 1080 },
@@ -43,7 +48,7 @@ export const EXPORT_DIMS: Record<
   },
 };
 
-export const EXPORT_QUALITIES: readonly ExportQuality[] = ['1080p', '4K'] as const;
+export const EXPORT_QUALITIES: readonly ExportQuality[] = ['720p', '1080p', '4K'] as const;
 
 export function getExportDims(
   aspect: AspectRatio,
@@ -53,7 +58,9 @@ export function getExportDims(
 }
 
 export function getBitrateForQuality(quality: ExportQuality): number {
-  return quality === '4K' ? 16_000_000 : 6_000_000; // 16 Mbps for 4K, 6 Mbps for 1080p (crisp text)
+  if (quality === '4K') return 16_000_000; // 16 Mbps for 4K (crisp text)
+  if (quality === '720p') return 2_500_000; // 2.5 Mbps for HD — smallest & fastest
+  return 6_000_000; // 6 Mbps for 1080p
 }
 
 export const VIDEO_FORMATS: readonly VideoFormat[] = ['mp4', 'webm'] as const;

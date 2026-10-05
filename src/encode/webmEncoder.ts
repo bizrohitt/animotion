@@ -52,8 +52,10 @@ export async function encodeWebM(
     for (const track of dest.stream.getAudioTracks()) stream.addTrack(track);
   }
 
-  const is4K = dims.width >= 3000 || dims.height >= 3000 || dims.width * dims.height >= 3840 * 2160;
-  const bitrate = is4K ? 16_000_000 : 6_000_000;
+  const area = dims.width * dims.height;
+  const is4K = dims.width >= 3000 || dims.height >= 3000 || area >= 3840 * 2160;
+  const isHD = area <= 1280 * 720;
+  const bitrate = is4K ? 16_000_000 : isHD ? 2_500_000 : 6_000_000;
   const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9')
     ? 'video/webm;codecs=vp9'
     : 'video/webm';

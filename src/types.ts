@@ -5,7 +5,7 @@ export type AspectRatio = '9:16' | '1:1' | '16:9';
 
 export type VideoFormat = 'mp4' | 'webm';
 
-export type ExportQuality = '1080p' | '4K';
+export type ExportQuality = '720p' | '1080p' | '4K';
 
 export type SoundEffect =
   'paperShuffle' | 'cameraShutter' | 'filmAdvance' | 'polaroid' | 'flashPop' | 'none';
