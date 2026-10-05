@@ -3,8 +3,7 @@ import { loadRecent, saveRecent, clearRecent } from '../src/ui/history.ts';
 
 function mockStorage() {
   const store = new Map<string, string>();
-  // @ts-ignore
-  globalThis.localStorage = {
+  (globalThis as unknown as { localStorage: Storage }).localStorage = {
     getItem: (k: string) => store.get(k) ?? null,
     setItem: (k: string, v: string) => {
       store.set(k, v);

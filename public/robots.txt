@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://bizrohitt.github.io/animotion/sitemap.xml

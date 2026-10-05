@@ -15,6 +15,7 @@ import { saveRecent, renderRecent, loadRecent } from './ui/history.ts';
 import { createFrameCache, drawCachedFrame, type FrameCache } from './render/cache.ts';
 import { updateEncodeBadge } from './ui/encodeBadge.ts';
 import { exportFramesAsZip } from './encode/zipFallback.ts';
+import { updatePosterMeta } from './ui/poster.ts';
 import { ASPECT_DIMS, DEFAULTS } from './config.ts';
 import type { Timeline } from './types.ts';
 const input = document.getElementById('phraseInput') as HTMLInputElement | null;
@@ -84,6 +85,7 @@ async function build(raw: string): Promise<boolean> {
     timeline = timeline.map((f) => ({ ...f, fontFamily: c.lockedFont }));
   }
   await ensureFontsLoaded([...new Set(timeline.map((f) => f.fontFamily))]);
+  if (parsed) updatePosterMeta(parsed);
   return true;
 }
 function loop(now: number): void {

@@ -35,14 +35,14 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',
     port: 5173,
-    // @ts-ignore — allow preview proxy host (e2b.app)
+    // @ts-expect-error — allow preview proxy host (e2b.app) not in vite types
     allowedHosts: true as unknown as string[],
     headers: { 'X-Frame-Options': 'ALLOWALL' },
   },
   preview: {
     host: '0.0.0.0',
     port: 4173,
-    // @ts-ignore
+    // @ts-expect-error — preview allowedHosts
     allowedHosts: true as unknown as string[],
   },
   appType: 'mpa',
