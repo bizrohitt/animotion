@@ -1,14 +1,16 @@
 // src/encode/mp4Encoder.ts — WebCodecs + mp4-muxer (MIT) → MP4
 
-import type { Timeline, ParsedInput, RenderDims } from '../types.ts';
+import type { Timeline, ParsedInput, RenderDims, ExportQuality } from '../types.ts';
 import { drawFrame } from '../render/drawFrame.ts';
 import { Muxer, ArrayBufferTarget } from 'mp4-muxer';
+import { getBitrateForQuality } from '../config.ts';
 
 export interface MP4EncodeOpts {
   dims: RenderDims;
   fps: number;
   audioBuffer?: AudioBuffer | null;
   onProgress?: (ratio: number) => void;
+  quality?: ExportQuality; // explicit quality → exact bitrate (preferred); falls back to area heuristic
 }
 
 export function isMP4Supported(): boolean {
@@ -48,11 +50,16 @@ export async function encodeMP4(
     error: (e) => console.error('VideoEncoder error', e),
   });
 
-  // Bitrate: 2.5 Mbps HD, 6 Mbps FHD, 16 Mbps 4K (crisp text needs high)
-  const area = width * height;
-  const is4K = width >= 3000 || height >= 3000 || area >= 3840 * 2160;
-  const isHD = area <= 1280 * 720;
-  const bitrate = is4K ? 16_000_000 : isHD ? 2_500_000 : 6_000_000;
+  // Bitrate: explicit quality wins (fixes 1:1 4K bug); fallback area heuristic for tests without quality
+  const bitrate =
+    opts.quality != null
+      ? getBitrateForQuality(opts.quality)
+      : (() => {
+          const area = width * height;
+          const is4K = width >= 3000 || height >= 3000 || area >= 3840 * 2160;
+          const isHD = area <= 1280 * 720;
+          return is4K ? 16_000_000 : isHD ? 2_500_000 : 6_000_000;
+        })();
   const videoCodec = 'avc1.4d002a';
   try {
     videoEncoder.configure({

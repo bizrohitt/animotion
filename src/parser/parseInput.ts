@@ -48,6 +48,14 @@ export function parseInput(raw: string): ParseResult {
   const after = raw.slice(match.index + match[0].length);
   const fullPhrase = before + focalWord + after;
 
+  // Enforce overall phrase cap (C3) — LIMITS.phraseMaxLen 120 was dead
+  if (fullPhrase.length > LIMITS.phraseMaxLen) {
+    return {
+      ok: false,
+      error: `Phrase must be ≤${LIMITS.phraseMaxLen} characters (got ${fullPhrase.length}).`,
+    };
+  }
+
   // Ensure no leftover markers
   if (fullPhrase.includes('==')) {
     return { ok: false, error: 'Malformed highlight markers. Use exactly ==word==.' };

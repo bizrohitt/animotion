@@ -44,7 +44,8 @@ let seed = DEFAULTS.seed,
   raf = 0,
   startMs = 0,
   histIdx = -1,
-  cache: FrameCache = [];
+  cache: FrameCache = [],
+  previewFps: number = DEFAULTS.cutsPerSec;
 const progressEl =
   (document.getElementById('progressBar') as HTMLElement | null) ??
   (() => {
@@ -74,6 +75,7 @@ async function build(raw: string): Promise<boolean> {
   if (errEl) errEl.textContent = '';
   parsed = res.parsed;
   const c = getControls();
+  previewFps = c.cutsPerSec;
   timeline = buildTimeline(parsed, {
     cutsPerSec: c.cutsPerSec,
     durationSec: c.durationSec,
@@ -92,7 +94,9 @@ function loop(now: number): void {
   if (!ctx || !canvas || timeline.length === 0 || !parsed) return;
   if (startMs === 0) startMs = now;
   const c = getControls();
-  const idx = Math.floor((now - startMs) / (1000 / c.cutsPerSec)) % timeline.length;
+  // Use snapshot fps (C2 fix) — live getControls().cutsPerSec would desync preview length before rebuild
+  const fps = previewFps > 0 ? previewFps : c.cutsPerSec;
+  const idx = Math.floor((now - startMs) / (1000 / fps)) % timeline.length;
   if (cache.length === timeline.length) {
     drawCachedFrame(ctx, cache, idx, canvas.width, canvas.height);
   } else {
@@ -172,16 +176,18 @@ async function onDownload(): Promise<void> {
           dims: fullDims,
           fps: c.cutsPerSec,
           audioBuffer: audioBuf,
-          onProgress: (r) => setProgress(progressEl, r),
-        });
+          onProgress: (r: number) => setProgress(progressEl, r),
+          quality: c.exportQuality,
+        } as never);
       } catch {
         const fb = c.format === 'mp4' ? encodeWebM : encodeMP4;
         blob = await fb(timeline, parsed, {
           dims: fullDims,
           fps: c.cutsPerSec,
           audioBuffer: audioBuf,
-          onProgress: (r) => setProgress(progressEl, r),
-        });
+          onProgress: (r: number) => setProgress(progressEl, r),
+          quality: c.exportQuality,
+        } as never);
         ext = c.format === 'mp4' ? 'webm' : 'mp4';
       }
       filename = filenameFor(ext as 'mp4' | 'webm');

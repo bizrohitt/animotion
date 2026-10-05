@@ -2,8 +2,9 @@ import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
-  // For GitHub Pages project site (https://bizrohitt.github.io/animotion/) set base: '/animotion/'
-  base: '/',
+  // GH Pages project site https://bizrohitt.github.io/animotion/ needs base '/animotion/'.
+  // Default '/' for local/e2b preview; set BASE=/animotion/ or VITE_BASE=/animotion/ for Pages build.
+  base: process.env.BASE || process.env.VITE_BASE || '/',
   plugins: [
     VitePWA({
       registerType: 'autoUpdate',
