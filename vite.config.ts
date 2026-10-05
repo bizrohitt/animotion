@@ -29,6 +29,8 @@ export default defineConfig({
       workbox: {
         globPatterns: ['**/*.{js,css,html,woff2,svg}'],
         navigateFallback: 'index.html',
+        // MPA: don't fallback /pages/* to index.html offline — they are precached individually
+        navigateFallbackDenylist: [/^\/pages\//],
       },
       devOptions: { enabled: true, type: 'module' },
     }),
@@ -49,7 +51,7 @@ export default defineConfig({
   appType: 'mpa',
   build: {
     outDir: 'dist',
-    sourcemap: true,
+    sourcemap: false, // M10: don't ship 239 KiB maps to Pages (use hidden if needed for audit)
     rollupOptions: {
       input: {
         main: 'index.html',

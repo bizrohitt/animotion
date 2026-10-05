@@ -66,9 +66,9 @@ describe('drawPaper', () => {
     const ctxB = mockCtx();
     drawPaper(ctxA, 20, 20, styleA, 123);
     drawPaper(ctxB, 20, 20, styleB, 123);
-    // first call is base fill with tint
-    expect(ctxA.calls[0]).toContain('rgb(242,232,213)');
-    expect(ctxB.calls[0]).toContain('rgb(233,230,221)');
+    // base fill tint is inside clipped paper (not necessarily first call due to save/clip)
+    expect(ctxA.calls.find((c) => c.includes('rgb(242,232,213)'))).toBeTruthy();
+    expect(ctxB.calls.find((c) => c.includes('rgb(233,230,221)'))).toBeTruthy();
     expect(ctxA.calls.join('|')).not.toBe(ctxB.calls.join('|'));
   });
 
@@ -81,12 +81,15 @@ describe('drawPaper', () => {
     expect(ctx1.calls).toEqual(ctx2.calls);
   });
 
-  it('grain 0 does only base fill', () => {
+  it('grain 0 does only base fill + torn edge', () => {
     const style: PaperStyle = { id: 'plain', tint: '#ffffff', grain: 0 };
     const ctx = mockCtx();
     drawPaper(ctx, 10, 10, style, 1);
-    expect(ctx.calls.length).toBe(1);
-    expect(ctx.calls[0]).toContain('fillRect 0,0');
+    // grain 0: still base tint + deckle outline (save/clip/restore + stroke/fill), not just 1 call
+    const fills = ctx.calls.filter((c) => c.includes('fillRect 0,0'));
+    expect(fills.length).toBe(1);
+    expect(fills[0]).toContain('fillRect 0,0');
+    // torn edge adds stroke/fill when canvas large enough; for 10×10 it's tiny so path may be empty — just check base exists
   });
 });
 

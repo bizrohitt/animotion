@@ -130,8 +130,9 @@ async function onGenerate(): Promise<void> {
       }
       if (errEl && cache.length > 0) {
         const ms = Math.round(performance.now() - t0);
-        // subtle perf hint, not error
-        if (ms > 500) console.warn(`cache built in ${ms}ms for ${timeline.length} frames`);
+        // subtle perf hint, only in dev (M10 guard) — import.meta.env may be untyped in tsc
+        const isDev = (import.meta as unknown as { env?: { DEV?: boolean } }).env?.DEV;
+        if (ms > 500 && isDev) console.warn(`cache built in ${ms}ms for ${timeline.length} frames`);
       }
     } else {
       cache = [];
