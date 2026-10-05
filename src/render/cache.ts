@@ -1,6 +1,7 @@
 // src/render/cache.ts — pre-render preview frames to canvases (OffscreenCanvas if available)
 import type { FrameSpec, ParsedInput, RenderDims } from '../types.ts';
 import { drawFrame } from './drawFrame.ts';
+import { get2DContext, asCanvasSource } from '../utils/cast.ts';
 
 export type FrameCache = HTMLCanvasElement[]; // each entry sized to dims
 
@@ -28,12 +29,10 @@ export function createFrameCache(
           c.height = dims.height;
           return c;
         })();
-    const ctx = (canvas as unknown as HTMLCanvasElement).getContext(
-      '2d',
-    ) as CanvasRenderingContext2D | null;
+    const ctx = get2DContext(canvas);
     if (!ctx) continue;
     drawFrame(ctx, spec, parsed, dims);
-    cache.push(canvas as unknown as HTMLCanvasElement);
+    cache.push(canvas as unknown as HTMLCanvasElement); // keep HTMLCanvasElement[] type for drawImage
   }
   return cache;
 }
@@ -48,5 +47,5 @@ export function drawCachedFrame(
   const src = cache[index % cache.length];
   if (!src) return;
   ctx.clearRect(0, 0, targetW, targetH);
-  ctx.drawImage(src as unknown as CanvasImageSource, 0, 0, targetW, targetH);
+  ctx.drawImage(asCanvasSource(src), 0, 0, targetW, targetH);
 }

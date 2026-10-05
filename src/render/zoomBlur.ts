@@ -1,4 +1,5 @@
 // src/render/zoomBlur.ts — zoom and blur utilities
+import { setCtxFilter } from '../utils/cast.ts';
 
 export function applyZoom(
   ctx: CanvasRenderingContext2D,
@@ -15,18 +16,10 @@ export function applyZoom(
 export function applyBlur(ctx: CanvasRenderingContext2D, blur: number): void {
   if (blur <= 0) {
     // Reset filter if supported
-    try {
-      (ctx as unknown as { filter: string }).filter = 'none';
-    } catch {
-      // ignore
-    }
+    setCtxFilter(ctx, 'none');
     return;
   }
-  try {
-    (ctx as unknown as { filter: string }).filter = `blur(${blur}px)`;
-  } catch {
-    // filter unsupported — ignore (fallback to no blur)
-  }
+  setCtxFilter(ctx, `blur(${blur}px)`);
 }
 
 export function resetTransform(ctx: CanvasRenderingContext2D): void {

@@ -3,6 +3,7 @@
 import type { Timeline, ParsedInput, RenderDims, ExportQuality } from '../types.ts';
 import { drawFrame } from '../render/drawFrame.ts';
 import { getBitrateForQuality } from '../config.ts';
+import { getCaptureStream } from '../utils/cast.ts';
 
 export interface WebMEncodeOpts {
   dims: RenderDims;
@@ -39,9 +40,7 @@ export async function encodeWebM(
   const ctx = canvas.getContext('2d');
   if (!ctx) throw new Error('Canvas 2D not supported');
 
-  const stream = (
-    canvas as unknown as { captureStream: (fps: number) => MediaStream }
-  ).captureStream(fps);
+  const stream = getCaptureStream(canvas, fps);
   // Mix audio if provided — M6: ensure AudioContext resumes from suspended (autoplay policy)
   let audioCtx: AudioContext | null = null;
   if (audioBuffer) {

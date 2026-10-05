@@ -4,6 +4,7 @@ import type { Timeline, ParsedInput, RenderDims, ExportQuality } from '../types.
 import { drawFrame } from '../render/drawFrame.ts';
 import { Muxer, ArrayBufferTarget } from 'mp4-muxer';
 import { getBitrateForQuality } from '../config.ts';
+import { asCanvasSource, get2DContext } from '../utils/cast.ts';
 
 export interface MP4EncodeOpts {
   dims: RenderDims;
@@ -47,7 +48,10 @@ export async function encodeMP4(
 
   const videoEncoder = new VideoEncoder({
     output: (chunk, meta) => muxer.addVideoChunk(chunk, meta),
-    error: (e) => console.error('VideoEncoder error', e),
+    // Mi5: dev-only log, not user-visible (errEl shows encode failure)
+    error: (e) => {
+      if ((import.meta as unknown as { env?: { DEV?: boolean } }).env?.DEV) console.error('VideoEncoder error', e);
+    },
   });
 
   // Bitrate: explicit quality wins (fixes 1:1 4K bug); fallback area heuristic for tests without quality
@@ -80,7 +84,10 @@ export async function encodeMP4(
   if (audioBuffer) {
     audioEncoder = new AudioEncoder({
       output: (chunk, meta) => muxer.addAudioChunk(chunk, meta),
-      error: (e) => console.error('AudioEncoder error', e),
+      error: (e) => {
+        if ((import.meta as unknown as { env?: { DEV?: boolean } }).env?.DEV)
+          console.error('AudioEncoder error', e);
+      },
     });
     audioEncoder.configure({
       codec: 'mp4a.40.2',
@@ -126,27 +133,26 @@ export async function encodeMP4(
     audioEncoder.close();
   }
 
-  // Create canvas for rendering
-  const canvas =
+  // Create canvas for rendering — Mi13: typed cast via helper
+  const canvas: HTMLCanvasElement | OffscreenCanvas =
     typeof OffscreenCanvas !== 'undefined'
       ? new OffscreenCanvas(width, height)
       : document.createElement('canvas');
   if (!(canvas instanceof OffscreenCanvas)) {
-    canvas.width = width;
-    canvas.height = height;
+    (canvas as HTMLCanvasElement).width = width;
+    (canvas as HTMLCanvasElement).height = height;
   }
-  const ctx = (canvas as unknown as HTMLCanvasElement).getContext(
-    '2d',
-  ) as CanvasRenderingContext2D | null;
+  // Use helper to avoid `as unknown` spread
+  const ctx = get2DContext(canvas);
   if (!ctx) throw new Error('Canvas 2D not available');
 
   for (let i = 0; i < timeline.length; i++) {
     const spec = timeline[i];
     // clear and draw
     drawFrame(ctx as CanvasRenderingContext2D, spec, parsed, dims);
-    // VideoFrame from canvas
+    // VideoFrame from canvas — Mi13 helper
     const timestamp = spec.timestampMs * 1000; // µs
-    const frame = new VideoFrame(canvas as unknown as CanvasImageSource, {
+    const frame = new VideoFrame(asCanvasSource(canvas), {
       timestamp,
       duration: spec.durationMs * 1000,
     });
