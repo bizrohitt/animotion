@@ -205,4 +205,21 @@ describe('parser helpers (T-011)', () => {
     expect(toggleMarkers('hello world', 5, 5)).toBe('hello world');
     expect(toggleMarkers('hello ==world==', 5, 5)).toBe('hello ==world==');
   });
+
+  it('C3: rejects phrase >120 chars (fullPhrase cap)', () => {
+    const over = `==${'x'.repeat(23)}==` + ' ' + 'y'.repeat(100); // 23 +1+100=124 >120
+    const r = parseInput(over);
+    expect(r.ok).toBe(false);
+    if (!r.ok) expect(r.error).toContain('≤120');
+  });
+
+  it('C3: allows phrase exactly 120', () => {
+    const focal = 'hi';
+    const filler = 'a'.repeat(120 - focal.length - 1); // keep total 120 with space
+    const raw = `==${focal}== ${filler}`;
+    // fullPhrase = "hi " + filler = 120
+    const r = parseInput(raw);
+    // parser splits before/after: before '' focal hi after ' ' + filler => total 120
+    expect(r.ok).toBe(true);
+  });
 });

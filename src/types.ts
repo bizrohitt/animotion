@@ -111,5 +111,5 @@ export interface AppConfig {
   zoomMax: number;
   blurMax: number;
   durationSec: number;
-  lockedFont: string; // 'auto' or exact fontFamily from presets
+  lockedFont: 'auto' | (string & {}); // 'auto' for mixed clippings or exact fontFamily from presets
 }

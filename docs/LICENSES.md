@@ -16,6 +16,12 @@
 | ---------- | ------- | ---------- | --------------------------------------- | ------------- |
 | Vite       | 8.3.2   | MIT        | https://github.com/vitejs/vite          | Build tool    |
 | TypeScript | 5.9.2   | Apache-2.0 | https://github.com/microsoft/TypeScript | `strict:true` |
+| @fontsource/playfair-display   | 5.3.0 | MIT (font OFL 1.1) | https://github.com/fontsource/font-files/tree/main/fonts/google/playfair-display | Self-host woff2 400/700 |
+| @fontsource/libre-baskerville  | 5.3.0 | MIT (font OFL 1.1) | https://github.com/fontsource/font-files | Self-host woff2 400/700 |
+| @fontsource/old-standard-tt    | 5.3.0 | MIT (font OFL 1.1) | https://github.com/fontsource/font-files | Self-host woff2 400/700 |
+| @fontsource/special-elite      | 5.3.0 | MIT (font OFL 1.1) | https://github.com/fontsource/font-files | Self-host woff2 400 |
+| @fontsource/im-fell-english    | 5.3.0 | MIT (font OFL 1.1) | https://github.com/fontsource/font-files | Self-host woff2 400 |
+| @fontsource/courier-prime      | 5.3.0 | MIT (font OFL 1.1) | https://github.com/fontsource/font-files | Self-host woff2 400/700 |
 
 ## Dev Dependencies (lint / format / test)
 

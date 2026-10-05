@@ -14,6 +14,8 @@ export function triggerDownload(blob: Blob, filename: string): void {
 }
 
 export function filenameFor(ext: string): string {
+  // Mi15: UTC via toISOString for deterministic filename across timezones (Asia/Calcutta etc).
+  // Keeps file sort stable even if user changes local clock; alternative would be toLocaleString with offset.
   const ts = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
   return `matchcutter-${ts}.${ext}`;
 }
