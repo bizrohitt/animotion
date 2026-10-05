@@ -16,7 +16,7 @@ import { createFrameCache, drawCachedFrame, type FrameCache } from './render/cac
 import { updateEncodeBadge } from './ui/encodeBadge.ts';
 import { exportFramesAsZip } from './encode/zipFallback.ts';
 import { updatePosterMeta } from './ui/poster.ts';
-import { ASPECT_DIMS, DEFAULTS } from './config.ts';
+import { ASPECT_DIMS, DEFAULTS, getExportDims } from './config.ts';
 import type { Timeline } from './types.ts';
 const input = document.getElementById('phraseInput') as HTMLInputElement | null;
 const counter = document.getElementById('charCounter') as HTMLElement | null;
@@ -160,8 +160,8 @@ async function onDownload(): Promise<void> {
     const c = getControls();
     const audioBuf = await mixdown(timeline, c.soundEnabled ? c.soundEffect : 'none');
     if (errEl) errEl.textContent = 'Encoding video...';
-    const d = ASPECT_DIMS[c.aspect];
-    const fullDims = { width: d.width, height: d.height, aspect: c.aspect } as const;
+    const exp = getExportDims(c.aspect, c.exportQuality);
+    const fullDims = { width: exp.width, height: exp.height, aspect: c.aspect } as const;
     const enc = c.format === 'webm' ? encodeWebM : encodeMP4;
     let blob: Blob;
     let filename: string;

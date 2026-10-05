@@ -7,9 +7,10 @@ import { computeAnchorX } from '../layout/layoutEngine.ts';
 import { applyBlur } from './zoomBlur.ts';
 
 export function getFontSizeForDims(dims: RenderDims): number {
-  // Focal word at ~6% of width, clamped
+  // Focal word at ~6% of width, clamped — 96 for 1080p, up to 180 for 4K
   const base = Math.round(dims.width * 0.06);
-  return Math.max(28, Math.min(96, base));
+  // 1080p → 64, 4K 3840 → 180 (uncapped would be 230, but 180 keeps ink bleed crisp)
+  return Math.max(28, Math.min(180, base));
 }
 
 export async function ensureFontsLoaded(fontFamilies: string[]): Promise<void> {

@@ -5,6 +5,8 @@ export type AspectRatio = '9:16' | '1:1' | '16:9';
 
 export type VideoFormat = 'mp4' | 'webm';
 
+export type ExportQuality = '1080p' | '4K';
+
 export type SoundEffect =
   'paperShuffle' | 'cameraShutter' | 'filmAdvance' | 'polaroid' | 'flashPop' | 'none';
 
@@ -102,6 +104,7 @@ export interface Anchor {
 export interface AppConfig {
   aspect: AspectRatio;
   format: VideoFormat;
+  exportQuality: ExportQuality;
   soundEnabled: boolean;
   soundEffect: SoundEffect;
   cutsPerSec: number;

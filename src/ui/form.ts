@@ -2,7 +2,7 @@
 
 import { parseInput, toggleMarkers } from '../parser/parseInput.ts';
 import { LIMITS, DEFAULTS, ASPECT_DIMS } from '../config.ts';
-import type { AspectRatio, SoundEffect, VideoFormat, AppConfig } from '../types.ts';
+import type { AspectRatio, SoundEffect, VideoFormat, ExportQuality, AppConfig } from '../types.ts';
 
 export function updateCounter(input: HTMLInputElement, counter: HTMLElement): void {
   const res = parseInput(input.value);
@@ -73,6 +73,8 @@ export function getControls(): AppConfig {
     AspectRatio | undefined;
   const format = (document.getElementById('formatSelect') as HTMLSelectElement | null)?.value as
     VideoFormat | undefined;
+  const quality = (document.getElementById('qualitySelect') as HTMLSelectElement | null)?.value as
+    ExportQuality | undefined;
   const soundEnabled = (document.getElementById('soundToggle') as HTMLInputElement | null)?.checked;
   const soundEffect = (document.getElementById('soundEffect') as HTMLSelectElement | null)
     ?.value as SoundEffect | undefined;
@@ -83,6 +85,7 @@ export function getControls(): AppConfig {
   return {
     aspect: aspect ?? DEFAULTS.aspect,
     format: format ?? DEFAULTS.format,
+    exportQuality: quality ?? DEFAULTS.exportQuality,
     soundEnabled: soundEnabled ?? DEFAULTS.soundEnabled,
     soundEffect: soundEffect ?? DEFAULTS.soundEffect,
     cutsPerSec: Number.isFinite(cuts)
@@ -103,6 +106,7 @@ export function setupControls(onChange: () => void): void {
   const ids = [
     'aspectSelect',
     'formatSelect',
+    'qualitySelect',
     'soundToggle',
     'soundEffect',
     'cutsInput',
