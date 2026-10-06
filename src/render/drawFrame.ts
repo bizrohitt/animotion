@@ -32,7 +32,7 @@ export function drawFrame(
   const { width, height } = dims;
   const cx = width / 2;
   const cy = height / 2;
-  const fontSize = getFontSizeForDims(dims);
+  let fontSize = getFontSizeForDims(dims);
 
   ctx.save();
   ctx.clearRect(0, 0, width, height);
@@ -56,10 +56,38 @@ export function drawFrame(
   // But since we did manual, we should not call applyZoom again.
   // Ensure we reset filter after draw if needed in caller via restore.
 
-  const font = `${spec.fontWeight} ${fontSize}px ${spec.fontFamily}`;
+  let font = `${spec.fontWeight} ${fontSize}px ${spec.fontFamily}`;
   ctx.font = font;
   ctx.textBaseline = 'middle';
   ctx.textAlign = 'left';
+
+  // Fit-to-frame: keep anchored phrase inside paper (inset 8 + padding 14) so left side not cropped
+  // Scale down fontSize if focal near edge would push text outside; keep ≥16px
+  {
+    const inset = 8;
+    const padding = 14;
+    const availLeft = cx - inset - padding;
+    const availRight = width - cx - inset - padding;
+    const prefixProbe = parsed.fullPhrase.slice(0, parsed.focalStart);
+    const prefixW0 = ctx.measureText(prefixProbe).width;
+    const focalW0 = ctx.measureText(parsed.focalWord).width;
+    const totalW0 = ctx.measureText(parsed.fullPhrase).width;
+    const needLeft = prefixW0 + focalW0 / 2;
+    const needRight = totalW0 - needLeft;
+    if ((needLeft > availLeft || needRight > availRight) && needLeft > 0 && needRight >= 0) {
+      const scaleL = needLeft > 0 ? availLeft / needLeft : 1;
+      const scaleR = needRight > 0 ? availRight / needRight : 1;
+      const scale = Math.min(
+        needLeft > 0 ? scaleL : Infinity,
+        needRight > 0 ? scaleR : Infinity,
+      );
+      if (scale < 1) {
+        fontSize = Math.max(16, Math.floor(fontSize * scale));
+        font = `${spec.fontWeight} ${fontSize}px ${spec.fontFamily}`;
+        ctx.font = font;
+      }
+    }
+  }
 
   // Anchor: originX so focal centre at cx
   const originX = computeAnchorX(
