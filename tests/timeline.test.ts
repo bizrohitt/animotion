@@ -43,7 +43,7 @@ describe('buildTimeline', () => {
     expect(high.length).toBe(30); // clamped to max 30
   });
 
-  it('zoom monotonic increase in tail (last 20%)', () => {
+  it('zoom monotonic increase across full timeline', () => {
     const tl = buildTimeline(dummyParsed, {
       cutsPerSec: 10,
       durationSec: 2,
@@ -51,14 +51,19 @@ describe('buildTimeline', () => {
       blurMax: 0,
       seed: 777,
     });
-    const tailStart = Math.floor(tl.length * 0.8);
-    for (let i = tailStart + 1; i < tl.length; i++) {
-      expect(tl[i].zoom).toBeGreaterThanOrEqual(tl[i - 1].zoom);
+    // full-ramp: zoom = 1 + t*(zoomMax-1) with small jitter → visible from first frame
+    expect(tl[0].zoom).toBeCloseTo(1, 1);
+    expect(tl[tl.length - 1].zoom).toBeCloseTo(2.5, 1);
+    // allow tiny jitter (0.06*range ≈ 0.09) to dip slightly
+    for (let i = 1; i < tl.length; i++) {
+      expect(tl[i].zoom).toBeGreaterThanOrEqual(tl[i - 1].zoom - 0.1);
+      expect(tl[i].zoom).toBeGreaterThanOrEqual(1);
+      expect(tl[i].zoom).toBeLessThanOrEqual(2.5);
     }
-    expect(tl[tl.length - 1].zoom).toBeCloseTo(2.5, 5);
-    expect(tl[tailStart].zoom).toBeCloseTo(1, 5);
-    // first 80% should be 1
-    for (let i = 0; i < tailStart; i++) expect(tl[i].zoom).toBe(1);
+    // mid should be between start and end
+    const mid = Math.floor(tl.length / 2);
+    expect(tl[mid].zoom).toBeGreaterThan(tl[0].zoom);
+    expect(tl[mid].zoom).toBeLessThan(tl[tl.length - 1].zoom);
   });
 
   it('deterministic with same seed', () => {

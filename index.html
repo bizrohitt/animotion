@@ -72,6 +72,14 @@
             browser.
           </p>
         </div>
+        <section class="card templates-section" aria-labelledby="templatesTitle">
+          <h2 id="templatesTitle">Templates</h2>
+          <p class="hint">
+            Pick a style — newspaper, book, magazine, typewriter and more. Each sets font, paper,
+            speed and a starter phrase. Tweak anything after.
+          </p>
+          <div id="templatesGrid" class="templates-grid" role="list"></div>
+        </section>
         <div class="editor-grid">
           <section class="card">
             <h2>Your phrase</h2>
@@ -106,9 +114,17 @@
                   <label
                     >Aspect
                     <select id="aspectSelect">
-                      <option value="9:16" selected>9:16 (1080×1920)</option>
-                      <option value="1:1">1:1 (1080×1080)</option>
-                      <option value="16:9">16:9 (1920×1080)</option>
+                      <option value="9:16" selected>9:16 — Reels/TikTok (1080×1920)</option>
+                      <option value="4:5">4:5 — Instagram Portrait (1080×1350)</option>
+                      <option value="3:4">3:4 — Portrait (1080×1440)</option>
+                      <option value="2:3">2:3 — Photo Portrait (1080×1620)</option>
+                      <option value="1:1">1:1 — Square (1080×1080)</option>
+                      <option value="5:4">5:4 — Classic (1350×1080)</option>
+                      <option value="4:3">4:3 — Classic TV (1440×1080)</option>
+                      <option value="3:2">3:2 — Photo (1620×1080)</option>
+                      <option value="16:9">16:9 — Widescreen (1920×1080)</option>
+                      <option value="2:1">2:1 — Panorama (2160×1080)</option>
+                      <option value="21:9">21:9 — Cinematic (2520×1080)</option>
                     </select>
                   </label>
                   <label
@@ -140,12 +156,34 @@
                       <option value='"Special Elite", cursive'>Special Elite — dispatch</option>
                       <option value='"IM Fell English", serif'>IM Fell English — herald</option>
                       <option value='"Courier Prime", monospace'>Courier Prime — courier</option>
+                      <option value='"Anton", sans-serif'>Anton — impact</option>
+                      <option value='"Bebas Neue", sans-serif'>Bebas Neue — banner</option>
+                      <option value='"Montserrat", sans-serif'>Montserrat — moderne</option>
+                      <option value='"Oswald", sans-serif'>Oswald — stark</option>
+                      <option value='"Merriweather", serif'>Merriweather — editorial</option>
+                      <option value='"Lora", serif'>Lora — literary</option>
+                      <option value='"Raleway", sans-serif'>Raleway — elegant</option>
+                      <option value='"Inter", sans-serif'>Inter — swiss</option>
+                    </select>
+                  </label>
+                  <label
+                    >Background
+                    <select id="templateBackground">
+                      <option value="auto" selected>Auto — from template (paper + filler)</option>
+                      <option value="newspaper">Newspaper — columns with masthead</option>
+                      <option value="book">Book — page with margins &amp; drop cap</option>
+                      <option value="magazine">Magazine — glossy columns + image blocks</option>
+                      <option value="typewriter">Typewriter — ruled draft</option>
+                      <option value="vintage">Vintage — aged letters</option>
+                      <option value="notebook">Notebook — ruled lines</option>
+                      <option value="modern">Modern — minimal</option>
+                      <option value="cinematic">Cinematic — letterbox bars</option>
                     </select>
                   </label>
                 </div>
                 <div class="hint">
-                  720p HD fastest for drafts, 1080p for quick share, 4K for editing &amp; print —
-                  HD 720×1280 / 1280×720 at 2.5 Mbps, 4K 2160×3840 / 3840×2160 at 16 Mbps. Torn edge
+                  Newspaper shows columns &amp; printed text alongside your highlight; Book shows page
+                  text; Magazine shows glossy blocks. 720p/1080p/4K at 2.5 / 6 / 16 Mbps. Torn edge
                   always on.
                 </div>
               </fieldset>
@@ -188,6 +226,41 @@
                     <input type="range" id="blurInput" min="0" max="3" step="0.1" value="0" />
                     <output id="blurVal">0</output>
                   </div>
+                </div>
+                <div class="range-row">
+                  <label for="letterSizeInput">Letter size</label>
+                  <div class="range-control">
+                    <input type="range" id="letterSizeInput" min="0.5" max="2.0" step="0.1" value="1.0" />
+                    <output id="letterSizeVal">1.0x</output>
+                  </div>
+                </div>
+              </fieldset>
+              <fieldset>
+                <legend>Typography</legend>
+                <label
+                  >Text align
+                  <select id="textAlignSelect" aria-label="Text alignment">
+                    <option value="center" selected>Center — anchored (default, never crops)</option>
+                    <option value="left">Left</option>
+                    <option value="right">Right</option>
+                    <option value="justify">Justify</option>
+                  </select>
+                </label>
+                <div class="hint" style="margin: 4px 0 8px">
+                  Center keeps the focal word pinned at the frame center and auto-scales so nothing is
+                  cropped.
+                </div>
+                <div class="grid-2" style="gap: 8px">
+                  <label><input type="checkbox" id="textBold" /> <strong>B</strong> Bold</label>
+                  <label><input type="checkbox" id="textItalic" /> <em>I</em> Italic</label>
+                  <label
+                    ><input type="checkbox" id="textStrike" />
+                    <span style="text-decoration: line-through">S</span> Strikethrough</label
+                  >
+                  <label
+                    ><input type="checkbox" id="textUnderline" />
+                    <span style="text-decoration: underline">U</span> Underline</label
+                  >
                 </div>
               </fieldset>
             </div>

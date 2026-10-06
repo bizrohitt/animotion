@@ -2,7 +2,25 @@
 
 import { parseInput, toggleMarkers } from '../parser/parseInput.ts';
 import { LIMITS, DEFAULTS, ASPECT_DIMS } from '../config.ts';
-import type { AspectRatio, SoundEffect, VideoFormat, ExportQuality, AppConfig } from '../types.ts';
+import type {
+  AspectRatio,
+  SoundEffect,
+  VideoFormat,
+  ExportQuality,
+  AppConfig,
+  TextAlign,
+  TemplateBackground,
+} from '../types.ts';
+
+let _templateBackground: TemplateBackground = DEFAULTS.templateBackground;
+
+export function setTemplateBackground(bg: TemplateBackground): void {
+  _templateBackground = bg;
+}
+
+export function getTemplateBackground(): TemplateBackground {
+  return _templateBackground;
+}
 
 export function updateCounter(input: HTMLInputElement, counter: HTMLElement): void {
   const res = parseInput(input.value);
@@ -83,7 +101,20 @@ export function getControls(): AppConfig {
   const cuts = Number((document.getElementById('cutsInput') as HTMLInputElement | null)?.value);
   const zoom = Number((document.getElementById('zoomInput') as HTMLInputElement | null)?.value);
   const blur = Number((document.getElementById('blurInput') as HTMLInputElement | null)?.value);
+  const letterSize = Number((document.getElementById('letterSizeInput') as HTMLInputElement | null)?.value);
   const lockedFont = (document.getElementById('fontSelect') as HTMLSelectElement | null)?.value;
+  const textAlign = (document.getElementById('textAlignSelect') as HTMLSelectElement | null)?.value as
+    TextAlign | undefined;
+  const bold = (document.getElementById('textBold') as HTMLInputElement | null)?.checked ?? DEFAULTS.textBold;
+  const italic = (document.getElementById('textItalic') as HTMLInputElement | null)?.checked ?? DEFAULTS.textItalic;
+  const strike = (document.getElementById('textStrike') as HTMLInputElement | null)?.checked ?? DEFAULTS.textStrike;
+  const underline = (document.getElementById('textUnderline') as HTMLInputElement | null)?.checked ?? DEFAULTS.textUnderline;
+  // templateBackground is stored in module state (set via template picker), not a visible control yet
+  // fall back to DOM hidden input if present, else module state
+  const bgFromDom = (document.getElementById('templateBackground') as HTMLSelectElement | null)?.value as
+    | TemplateBackground
+    | undefined;
+  const templateBackground = bgFromDom ?? _templateBackground ?? DEFAULTS.templateBackground;
   return {
     aspect: aspect ?? DEFAULTS.aspect,
     format: format ?? DEFAULTS.format,
@@ -99,8 +130,17 @@ export function getControls(): AppConfig {
     blurMax: Number.isFinite(blur)
       ? Math.max(LIMITS.blur.min, Math.min(LIMITS.blur.max, blur))
       : DEFAULTS.blurMax,
+    letterSize: Number.isFinite(letterSize)
+      ? Math.max(LIMITS.letterSize.min, Math.min(LIMITS.letterSize.max, letterSize))
+      : DEFAULTS.letterSize,
     durationSec: DEFAULTS.durationSec,
     lockedFont: lockedFont ?? DEFAULTS.lockedFont,
+    textAlign: (textAlign as TextAlign) ?? DEFAULTS.textAlign,
+    bold,
+    italic,
+    strike,
+    underline,
+    templateBackground,
   };
 }
 
@@ -114,7 +154,14 @@ export function setupControls(onChange: () => void): void {
     'cutsInput',
     'zoomInput',
     'blurInput',
+    'letterSizeInput',
     'fontSelect',
+    'textAlignSelect',
+    'textBold',
+    'textItalic',
+    'textStrike',
+    'textUnderline',
+    'templateBackground',
   ];
   for (const id of ids) {
     const el = document.getElementById(id);
@@ -129,10 +176,13 @@ export function setupControls(onChange: () => void): void {
   const zoomVal = document.getElementById('zoomVal');
   const blurIn = document.getElementById('blurInput') as HTMLInputElement | null;
   const blurVal = document.getElementById('blurVal');
+  const letterSizeIn = document.getElementById('letterSizeInput') as HTMLInputElement | null;
+  const letterSizeVal = document.getElementById('letterSizeVal');
   const sync = (): void => {
     if (cutsIn && cutsVal) cutsVal.textContent = String(cutsIn.value);
     if (zoomIn && zoomVal) zoomVal.textContent = `${Number(zoomIn.value).toFixed(1)}x`;
     if (blurIn && blurVal) blurVal.textContent = String(blurIn.value);
+    if (letterSizeIn && letterSizeVal) letterSizeVal.textContent = `${Number(letterSizeIn.value).toFixed(1)}x`;
     // update preview canvas size on aspect change
     const canvas = document.getElementById('preview') as HTMLCanvasElement | null;
     const aspect = (document.getElementById('aspectSelect') as HTMLSelectElement | null)?.value as
@@ -143,7 +193,7 @@ export function setupControls(onChange: () => void): void {
       canvas.height = d.height / 2;
     }
   };
-  for (const el of [cutsIn, zoomIn, blurIn, document.getElementById('aspectSelect')]) {
+  for (const el of [cutsIn, zoomIn, blurIn, letterSizeIn, document.getElementById('aspectSelect')]) {
     el?.addEventListener('input', sync);
     el?.addEventListener('change', sync);
   }

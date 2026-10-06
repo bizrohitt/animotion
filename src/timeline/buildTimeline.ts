@@ -24,7 +24,6 @@ export function buildTimeline(parsed: ParsedInput, opts: TimelineOpts): Timeline
   const timeline: Timeline = [];
 
   let prevId: string | null = null;
-  const tailStart = Math.floor(frameCount * 0.8);
 
   for (let i = 0; i < frameCount; i++) {
     const preset = pickLayout(rng, prevId);
@@ -33,12 +32,14 @@ export function buildTimeline(parsed: ParsedInput, opts: TimelineOpts): Timeline
     const rotation = randomRotation(rng, preset);
     const fillerLines = generateFillerLines(rng, 4);
 
-    // zoom ramp in last 20%
-    let zoom = 1;
-    if (i >= tailStart && frameCount > tailStart) {
-      const tailLen = frameCount - tailStart;
-      const t = (i - tailStart) / Math.max(1, tailLen - 1); // 0..1
-      zoom = 1 + t * (zoomMax - 1);
+    // zoom ramps across whole timeline (was tail-only 20% → user saw only end zoomed)
+    // Now every frame has visible zoom progression; real-time preview shows change instantly
+    const t = frameCount > 1 ? i / (frameCount - 1) : 0; // 0..1
+    let zoom = 1 + t * (zoomMax - 1);
+    // tiny jitter so cuts don't look perfectly linear
+    if (zoomMax > 1) {
+      const jitter = (rng.next() - 0.5) * 0.06 * (zoomMax - 1);
+      zoom = Math.max(1, Math.min(zoomMax, zoom + jitter));
     }
 
     const blur = blurMax > 0 ? rng.next() * blurMax * 0.6 : 0;

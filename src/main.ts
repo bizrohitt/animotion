@@ -17,6 +17,7 @@ import { updateEncodeBadge } from './ui/encodeBadge.ts';
 import { exportFramesAsZip } from './encode/zipFallback.ts';
 import { updatePosterMeta } from './ui/poster.ts';
 import { ASPECT_DIMS, DEFAULTS, getExportDims } from './config.ts';
+import { renderTemplates, applyTemplateToForm } from './ui/templates.ts';
 import type { Timeline } from './types.ts';
 const input = document.getElementById('phraseInput') as HTMLInputElement | null;
 const counter = document.getElementById('charCounter') as HTMLElement | null;
@@ -33,6 +34,7 @@ const recentWrap = document.getElementById('recent') as HTMLElement | null;
 const btnCopy = document.getElementById('btnCopyLink') as HTMLButtonElement | null;
 const copyFeedback = document.getElementById('copyFeedback') as HTMLElement | null;
 const badgeEl = document.getElementById('encodeBadge') as HTMLElement | null;
+const templatesGrid = document.getElementById('templatesGrid') as HTMLElement | null;
 if (canvas) {
   const d = ASPECT_DIMS[DEFAULTS.aspect];
   canvas.width = d.width / 2;
@@ -45,7 +47,17 @@ let seed = DEFAULTS.seed,
   startMs = 0,
   histIdx = -1,
   cache: FrameCache = [],
-  previewFps: number = DEFAULTS.cutsPerSec;
+  previewFps: number = DEFAULTS.cutsPerSec,
+  cacheFontScale: number = DEFAULTS.letterSize,
+  cacheZoom: number = DEFAULTS.zoomMax,
+  cacheBlur: number = DEFAULTS.blurMax,
+  cacheCuts: number = DEFAULTS.cutsPerSec,
+  cacheTextAlign: string = DEFAULTS.textAlign,
+  cacheBold: boolean = DEFAULTS.textBold,
+  cacheItalic: boolean = DEFAULTS.textItalic,
+  cacheStrike: boolean = DEFAULTS.textStrike,
+  cacheUnderline: boolean = DEFAULTS.textUnderline,
+  cacheBackground: string = DEFAULTS.templateBackground;
 const progressEl =
   (document.getElementById('progressBar') as HTMLElement | null) ??
   (() => {
@@ -94,17 +106,43 @@ function loop(now: number): void {
   if (!ctx || !canvas || timeline.length === 0 || !parsed) return;
   if (startMs === 0) startMs = now;
   const c = getControls();
-  // Use snapshot fps (C2 fix) — live getControls().cutsPerSec would desync preview length before rebuild
   const fps = previewFps > 0 ? previewFps : c.cutsPerSec;
   const idx = Math.floor((now - startMs) / (1000 / fps)) % timeline.length;
-  if (cache.length === timeline.length) {
+  const liveDims = {
+    width: canvas.width,
+    height: canvas.height,
+    aspect: c.aspect,
+    fontScale: c.letterSize,
+    textAlign: c.textAlign,
+    bold: c.bold,
+    italic: c.italic,
+    strike: c.strike,
+    underline: c.underline,
+    templateBackground: c.templateBackground,
+  } as const;
+  const cacheStale =
+    cache.length === timeline.length &&
+    (cacheFontScale !== c.letterSize ||
+      cacheZoom !== c.zoomMax ||
+      cacheBlur !== c.blurMax ||
+      cacheCuts !== c.cutsPerSec ||
+      cacheTextAlign !== c.textAlign ||
+      cacheBold !== c.bold ||
+      cacheItalic !== c.italic ||
+      cacheStrike !== c.strike ||
+      cacheUnderline !== c.underline ||
+      cacheBackground !== c.templateBackground);
+  if (cache.length === timeline.length && !cacheStale) {
     drawCachedFrame(ctx, cache, idx, canvas.width, canvas.height);
   } else {
-    drawFrame(ctx, timeline[idx], parsed, {
-      width: canvas.width,
-      height: canvas.height,
-      aspect: c.aspect,
-    });
+    // Live override so slider feels instant even before onGenerate rebuilds timeline
+    const base = timeline[idx];
+    const t = timeline.length > 1 ? idx / (timeline.length - 1) : 0;
+    const liveZoom = 1 + t * (c.zoomMax - 1);
+    // keep tiny jitter for feel
+    const jitter = c.zoomMax > 1 ? (Math.sin(idx * 12.9898) * 0.5 + 0.5 - 0.5) * 0.02 * (c.zoomMax - 1) : 0;
+    const specLive = { ...base, zoom: Math.max(1, Math.min(c.zoomMax, liveZoom + jitter)), blur: c.blurMax > 0 ? (base.blur / (cacheBlur || 1)) * c.blurMax : 0 };
+    drawFrame(ctx, specLive, parsed, liveDims);
   }
   setProgress(progressEl, (idx + 1) / timeline.length);
   raf = requestAnimationFrame(loop);
@@ -121,10 +159,31 @@ async function onGenerate(): Promise<void> {
     // build preview cache (half-res) for instant rAF blit — ~10x faster than per-frame drawFrame
     if (parsed && canvas) {
       const c = getControls();
-      const dims = { width: canvas.width, height: canvas.height, aspect: c.aspect } as const;
+      const dims = {
+        width: canvas.width,
+        height: canvas.height,
+        aspect: c.aspect,
+        fontScale: c.letterSize,
+        textAlign: c.textAlign,
+        bold: c.bold,
+        italic: c.italic,
+        strike: c.strike,
+        underline: c.underline,
+        templateBackground: c.templateBackground,
+      } as const;
       const t0 = performance.now();
       try {
         cache = createFrameCache(timeline, parsed, dims);
+        cacheFontScale = c.letterSize;
+        cacheZoom = c.zoomMax;
+        cacheBlur = c.blurMax;
+        cacheCuts = c.cutsPerSec;
+        cacheTextAlign = c.textAlign;
+        cacheBold = c.bold;
+        cacheItalic = c.italic;
+        cacheStrike = c.strike;
+        cacheUnderline = c.underline;
+        cacheBackground = c.templateBackground;
       } catch {
         cache = [];
       }
@@ -171,7 +230,18 @@ async function onDownload(): Promise<void> {
     dbg('mixdown done', audioBuf?.duration, audioBuf?.sampleRate);
     if (errEl) errEl.textContent = 'Encoding video...';
     const exp = getExportDims(c.aspect, c.exportQuality);
-    const fullDims = { width: exp.width, height: exp.height, aspect: c.aspect } as const;
+    const fullDims = {
+      width: exp.width,
+      height: exp.height,
+      aspect: c.aspect,
+      fontScale: c.letterSize,
+      textAlign: c.textAlign,
+      bold: c.bold,
+      italic: c.italic,
+      strike: c.strike,
+      underline: c.underline,
+      templateBackground: c.templateBackground,
+    } as const;
     dbg('export dims', fullDims, 'fps', c.cutsPerSec, 'fmt', c.format);
     const enc = c.format === 'webm' ? encodeWebM : encodeMP4;
     let blob: Blob;
@@ -257,6 +327,15 @@ function init(): void {
   if (!input || !ctx || !counter) return;
   const fromURL = getPhraseFromURL();
   input.value = fromURL ?? 'Markets jittery. ==TACO again==.';
+  if (templatesGrid) {
+    renderTemplates(templatesGrid, (t) => {
+      input.value = t.phrase;
+      applyTemplateToForm(t);
+      // ensure counter updates instantly before generate
+      updateCounter(input, counter);
+      void onGenerate();
+    });
+  }
   if (exWrap)
     renderExamples(exWrap, (t) => {
       input.value = t;

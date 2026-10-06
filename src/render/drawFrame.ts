@@ -5,12 +5,15 @@ import { drawPaper } from './paper.ts';
 import { drawHighlight, getHighlightBBox } from './highlight.ts';
 import { computeAnchorX } from '../layout/layoutEngine.ts';
 import { applyBlur } from './zoomBlur.ts';
+import { drawTemplateBackground } from './backgrounds.ts';
 
 export function getFontSizeForDims(dims: RenderDims): number {
   // Focal word at ~6% of width, clamped — 96 for 1080p, up to 180 for 4K
   const base = Math.round(dims.width * 0.06);
-  // 1080p → 64, 4K 3840 → 180 (uncapped would be 230, but 180 keeps ink bleed crisp)
-  return Math.max(28, Math.min(180, base));
+  const raw = Math.max(28, Math.min(180, base));
+  // letter-size multiplier (0.5-2.0) — via RenderDims.fontScale for real-time control
+  const scale = dims.fontScale != null ? Math.max(0.5, Math.min(2.0, dims.fontScale)) : 1;
+  return Math.max(12, Math.round(raw * scale));
 }
 
 export async function ensureFontsLoaded(fontFamilies: string[]): Promise<void> {
@@ -33,6 +36,11 @@ export function drawFrame(
   const cx = width / 2;
   const cy = height / 2;
   let fontSize = getFontSizeForDims(dims);
+  const textAlign = dims.textAlign ?? 'center';
+  const isBold = !!dims.bold;
+  const isItalic = !!dims.italic;
+  const isStrike = !!dims.strike;
+  const isUnderline = !!dims.underline;
 
   ctx.save();
   ctx.clearRect(0, 0, width, height);
@@ -43,96 +51,123 @@ export function drawFrame(
   // paper background
   drawPaper(ctx, width, height, spec.paperStyle, spec.index * 1009);
 
-  // zoom and rotation around center
-  // order: zoom -> rotation (both around cx,cy)
+  // zoom and rotation around center — both around cx,cy
   ctx.translate(cx, cy);
   ctx.rotate((spec.rotation * Math.PI) / 180);
   ctx.scale(spec.zoom, spec.zoom);
   ctx.translate(-cx, -cy);
-  // Note: applyZoom already does translate/scale, but we combined with rotate above.
-  // To avoid double-translate, we manually did scale. If spec.zoom !==1, already handled.
-  // If we want to use helper, we would do:
-  // applyZoom(ctx, spec.zoom, cx, cy) before rotate.
-  // But since we did manual, we should not call applyZoom again.
-  // Ensure we reset filter after draw if needed in caller via restore.
 
-  let font = `${spec.fontWeight} ${fontSize}px ${spec.fontFamily}`;
+  // Font with Bold/Italic overrides — keep original weight unless Bold forces 700
+  const baseWeight = isBold ? 700 : spec.fontWeight;
+  const stylePrefix = isItalic ? 'italic ' : '';
+  let font = `${stylePrefix}${baseWeight} ${fontSize}px ${spec.fontFamily}`;
   ctx.font = font;
   ctx.textBaseline = 'middle';
   ctx.textAlign = 'left';
 
-  // Fit-to-frame: keep anchored phrase inside paper (inset 8 + padding 14) so left side not cropped
-  // Scale down fontSize if focal near edge would push text outside; keep ≥16px
+  // ── ALWAYS FIT — no crop guarantee (zoom-aware) ─────────────────────
+  // Default is center: phrase anchored so focal centre at cx stays pinned,
+  // and auto-scaled to stay inside safe inset even at max zoom/rotation.
+  // For left/right/justify we still guarantee total width fits with zoom.
   {
     const inset = 8;
     const padding = 14;
-    const availLeft = cx - inset - padding;
-    const availRight = width - cx - inset - padding;
+    const safeLeft = cx - inset - padding;
+    const safeRight = width - cx - inset - padding;
+    const safeTotal = width - 2 * inset - 2 * padding;
+    // Measure with current Bold/Italic font so width is realistic
+    ctx.font = font;
     const prefixProbe = parsed.fullPhrase.slice(0, parsed.focalStart);
     const prefixW0 = ctx.measureText(prefixProbe).width;
     const focalW0 = ctx.measureText(parsed.focalWord).width;
     const totalW0 = ctx.measureText(parsed.fullPhrase).width;
-    const needLeft = prefixW0 + focalW0 / 2;
-    const needRight = totalW0 - needLeft;
-    if ((needLeft > availLeft || needRight > availRight) && needLeft > 0 && needRight >= 0) {
-      const scaleL = needLeft > 0 ? availLeft / needLeft : 1;
-      const scaleR = needRight > 0 ? availRight / needRight : 1;
-      const scale = Math.min(
-        needLeft > 0 ? scaleL : Infinity,
-        needRight > 0 ? scaleR : Infinity,
-      );
-      if (scale < 1) {
-        fontSize = Math.max(16, Math.floor(fontSize * scale));
-        font = `${spec.fontWeight} ${fontSize}px ${spec.fontFamily}`;
-        ctx.font = font;
-      }
+
+    // Rotation expands bounding box diagonally — add ~12% buffer at max 2.2deg plus zoom
+    const rotAbs = Math.abs(spec.rotation);
+    const rotPad = Math.sin((rotAbs * Math.PI) / 180) * fontSize * 0.6 + fontSize * 0.12;
+    // zoom expands distance from center
+    const z = spec.zoom || 1;
+    let scale = 1;
+    if (textAlign === 'center') {
+      const needLeft = prefixW0 + focalW0 / 2;
+      const needRight = totalW0 - needLeft;
+      // effective need after zoom + rotation slop
+      const effLeft = needLeft * z + rotPad;
+      const effRight = needRight * z + rotPad;
+      if (needLeft > 0 && effLeft > safeLeft) scale = Math.min(scale, safeLeft / effLeft);
+      if (needRight > 0 && effRight > safeRight) scale = Math.min(scale, safeRight / effRight);
+      // also catch total overflow (extreme zoom)
+      const effTotal = totalW0 * z + 2 * rotPad;
+      if (effTotal > safeTotal) scale = Math.min(scale, safeTotal / effTotal);
+    } else {
+      // left/right/justify: total width must fit
+      const effTotal = totalW0 * z + 2 * rotPad;
+      if (effTotal > safeTotal) scale = Math.min(scale, safeTotal / effTotal);
+    }
+    if (scale < 1) {
+      // keep readable floor 12px, respect letterSize already applied
+      fontSize = Math.max(12, Math.floor(fontSize * scale));
+      font = `${stylePrefix}${baseWeight} ${fontSize}px ${spec.fontFamily}`;
+      ctx.font = font;
     }
   }
 
-  // Anchor: originX so focal centre at cx
-  const originX = computeAnchorX(
-    parsed.fullPhrase,
-    parsed.focalWord,
-    parsed.focalStart,
-    (s) => ctx.measureText(s).width,
-    cx,
-  );
+  // ── Anchor / alignment ─────────────────────────────────────────────
+  // Default 'center' = match-cut: focal centre pinned at cx (existing behavior)
+  // left/right/justify honour the selector but still auto-fitted above
+  let originX: number;
   const originY = cy;
-
-  // filler lines (background text) — JetBrains Mono per request (monospace, OFL)
-  if (spec.fillerLines.length > 0) {
-    const fillerSize = Math.round(fontSize * 0.34);
-    ctx.font = `${400} ${fillerSize}px "JetBrains Mono", monospace`;
-    ctx.fillStyle = 'rgba(30,30,30,0.38)';
-    const lineH = fillerSize * 1.5;
-    let fy = originY - fontSize - lineH;
-    // draw up to 2 lines above
-    const above = spec.fillerLines.slice(0, 2);
-    for (let i = above.length - 1; i >= 0; i--) {
-      const txt = above[i];
-      const w = ctx.measureText(txt).width;
-      ctx.fillText(txt, cx - w / 2, fy);
-      fy -= lineH;
-    }
-    let by = originY + fontSize + lineH * 0.8;
-    const below = spec.fillerLines.slice(2, 4);
-    for (const txt of below) {
-      const w = ctx.measureText(txt).width;
-      ctx.fillText(txt, cx - w / 2, by);
-      by += lineH;
-    }
-    // restore main font
-    ctx.font = font;
+  if (textAlign === 'center') {
+    originX = computeAnchorX(
+      parsed.fullPhrase,
+      parsed.focalWord,
+      parsed.focalStart,
+      (s) => ctx.measureText(s).width,
+      cx,
+    );
+    ctx.textAlign = 'left';
+  } else if (textAlign === 'left') {
+    const inset = 22; // 8+14
+    originX = inset;
+    ctx.textAlign = 'left';
+  } else if (textAlign === 'right') {
+    const inset = 22;
+    const totalW = ctx.measureText(parsed.fullPhrase).width;
+    originX = width - inset - totalW;
+    // clamp to safe left if phrase longer than safe (should not happen after fit, but guard)
+    if (originX < inset) originX = inset;
+    ctx.textAlign = 'left';
+  } else {
+    // justify — single line treated as left but letter-spacing could be spread if we want
+    const inset = 22;
+    originX = inset;
+    ctx.textAlign = 'left';
   }
 
-  // highlight behind focal word
+  // ── Template printed background alongside highlight ──────────
+  // Newspaper: masthead + columns with rules; Book: page + drop-cap;
+  // Magazine: glossy image blocks; typewriter/notebook: ruled lines.
+  // Rendered inside zoom+rotation so it sticks to paper, with a clear
+  // center band so the focal highlight stays legible.
+  drawTemplateBackground(ctx, width, height, cx, originY, fontSize, spec, dims);
+  // background mutates font/align — restore for highlight/phrase
+  ctx.font = font;
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'middle';
+
+  // highlight behind focal word — recompute prefix/focal widths with current font
+  // Ensure we use the same font for accurate bbox
+  ctx.font = font;
+  ctx.textAlign = 'left';
+  // For non-center alignments, highlight still follows the phrase, not the anchor centre
+  // So compute highlight offset from originX
   const prefix = parsed.fullPhrase.slice(0, parsed.focalStart);
   const prefixW = ctx.measureText(prefix).width;
   const focalW = ctx.measureText(parsed.focalWord).width;
+  // getHighlightBBox expects origin at phrase start, with y as baseline top
   const bbox = getHighlightBBox(originX, originY, prefixW, focalW, fontSize);
-  // Mi4: getHighlightBBox assumes alphabetic baseline (y = baseline - fontSize). We use 'middle' baseline
+  // getHighlightBBox assumes alphabetic baseline (y = baseline - fontSize). We use 'middle' baseline
   // where originY is center. So y = cy - fontSize*0.5 (+0.05 descender fudge for marker bleed).
-  // 0.5 = half height to top, 0.05 = 5% descender pad so highlight sits slightly below center.
   const correctedBBox = {
     ...bbox,
     y: originY - fontSize * 0.5 + fontSize * 0.05,
@@ -144,6 +179,78 @@ export function drawFrame(
   ctx.fillStyle = 'rgba(17,17,17,0.10)';
   ctx.font = font;
   ctx.textBaseline = 'middle';
+  // justify: spread words to fill safe width — simple letter-spacing simulation
+  if (textAlign === 'justify') {
+    const words = parsed.fullPhrase.split(' ');
+    if (words.length > 1) {
+      const inset = 22;
+      const safeTotal = width - 2 * inset;
+      const wordsWidth = words.reduce((a, w) => a + ctx.measureText(w).width, 0);
+      const gapCount = words.length - 1;
+      // measure single space width with current font
+      const spaceW = ctx.measureText(' ').width;
+      const totalGapsW = spaceW * gapCount;
+      const naturalW = wordsWidth + totalGapsW;
+      const extra = safeTotal - naturalW;
+      // Only stretch if phrase not already full width and extra positive
+      if (extra > 0 && extra < safeTotal * 0.4) {
+        const extraPerGap = extra / gapCount;
+        let x = originX;
+        for (let i = 0; i < words.length; i++) {
+          const w = words[i];
+          ctx.fillText(w, x + 0.6, originY + 0.7);
+          x += ctx.measureText(w).width + spaceW + extraPerGap;
+        }
+        // also need to draw with shadow second pass — do loop again with shadow then break to skip normal fill
+        ctx.shadowColor = 'rgba(0,0,0,0.07)';
+        ctx.shadowBlur = 1.5;
+        x = originX;
+        for (let i = 0; i < words.length; i++) {
+          const w = words[i];
+          ctx.fillText(w, x, originY);
+          x += ctx.measureText(w).width + spaceW + extraPerGap;
+        }
+        ctx.restore();
+        // main phrase with justify already drawn via bleed passes, skip generic path — draw again crisp below with same spread
+        ctx.save();
+        ctx.fillStyle = '#0f0f0f';
+        ctx.font = font;
+        ctx.textBaseline = 'middle';
+        x = originX;
+        for (let i = 0; i < words.length; i++) {
+          const w = words[i];
+          ctx.fillText(w, x, originY);
+          x += ctx.measureText(w).width + spaceW + extraPerGap;
+        }
+        // decorations for justify path
+        if (isStrike || isUnderline) {
+          const totalW = safeTotal;
+          const yStrike = originY;
+          const yUnder = originY + fontSize * 0.42;
+          ctx.save();
+          ctx.strokeStyle = '#0f0f0f';
+          ctx.lineWidth = Math.max(1, fontSize * 0.07);
+          if (isStrike) {
+            ctx.beginPath();
+            ctx.moveTo(originX, yStrike);
+            ctx.lineTo(originX + totalW, yStrike);
+            ctx.stroke();
+          }
+          if (isUnderline) {
+            ctx.beginPath();
+            ctx.moveTo(originX, yUnder);
+            ctx.lineTo(originX + totalW, yUnder);
+            ctx.stroke();
+          }
+          ctx.restore();
+        }
+        ctx.restore();
+        ctx.restore();
+        applyBlur(ctx, 0);
+        return;
+      }
+    }
+  }
   ctx.fillText(parsed.fullPhrase, originX + 0.6, originY + 0.7);
   // extra feather via tiny shadow
   ctx.shadowColor = 'rgba(0,0,0,0.07)';
@@ -155,7 +262,33 @@ export function drawFrame(
   ctx.fillStyle = '#0f0f0f';
   ctx.font = font;
   ctx.textBaseline = 'middle';
+  ctx.textAlign = 'left';
+  // For justify we handled spread above; otherwise normal
   ctx.fillText(parsed.fullPhrase, originX, originY);
+
+  // decorations: underline / strike (bold/italic already in font)
+  if (isStrike || isUnderline) {
+    const totalW = ctx.measureText(parsed.fullPhrase).width;
+    ctx.save();
+    ctx.strokeStyle = '#0f0f0f';
+    ctx.lineWidth = Math.max(1, fontSize * 0.07);
+    ctx.lineCap = 'round';
+    if (isStrike) {
+      const y = originY;
+      ctx.beginPath();
+      ctx.moveTo(originX, y);
+      ctx.lineTo(originX + totalW, y);
+      ctx.stroke();
+    }
+    if (isUnderline) {
+      const y = originY + fontSize * 0.42;
+      ctx.beginPath();
+      ctx.moveTo(originX, y);
+      ctx.lineTo(originX + totalW, y);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
 
   ctx.restore();
   // reset filter

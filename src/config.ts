@@ -16,35 +16,68 @@ export const LIMITS = {
   cutsPerSec: { min: 4, max: 30, default: 12 },
   zoom: { min: 1.0, max: 3.0, default: 1.2 },
   blur: { min: 0, max: 3, default: 0 },
+  letterSize: { min: 0.5, max: 2.0, default: 1.0 },
   durationSec: { default: 2, min: 1, max: 5 },
   phraseMaxLen: 120,
 } as const;
 
 export const ASPECT_DIMS: Record<AspectRatio, { width: number; height: number }> = {
   '9:16': { width: 1080, height: 1920 },
+  '4:5': { width: 1080, height: 1350 },
+  '3:4': { width: 1080, height: 1440 },
+  '2:3': { width: 1080, height: 1620 },
   '1:1': { width: 1080, height: 1080 },
+  '5:4': { width: 1350, height: 1080 },
+  '4:3': { width: 1440, height: 1080 },
+  '3:2': { width: 1620, height: 1080 },
   '16:9': { width: 1920, height: 1080 },
+  '2:1': { width: 2160, height: 1080 },
+  '21:9': { width: 2520, height: 1080 },
 };
 
-// Full publishing sizes — 720p (HD), 1080p (FHD), 4K (UHD 2×)
+// Full publishing sizes — 720p (HD), 1080p (FHD), 4K (UHD 2x)
 export const EXPORT_DIMS: Record<
   ExportQuality,
   Record<AspectRatio, { width: number; height: number }>
 > = {
   '720p': {
     '9:16': { width: 720, height: 1280 },
+    '4:5': { width: 720, height: 900 },
+    '3:4': { width: 720, height: 960 },
+    '2:3': { width: 720, height: 1080 },
     '1:1': { width: 720, height: 720 },
+    '5:4': { width: 900, height: 720 },
+    '4:3': { width: 960, height: 720 },
+    '3:2': { width: 1080, height: 720 },
     '16:9': { width: 1280, height: 720 },
+    '2:1': { width: 1440, height: 720 },
+    '21:9': { width: 1680, height: 720 },
   },
   '1080p': {
     '9:16': { width: 1080, height: 1920 },
+    '4:5': { width: 1080, height: 1350 },
+    '3:4': { width: 1080, height: 1440 },
+    '2:3': { width: 1080, height: 1620 },
     '1:1': { width: 1080, height: 1080 },
+    '5:4': { width: 1350, height: 1080 },
+    '4:3': { width: 1440, height: 1080 },
+    '3:2': { width: 1620, height: 1080 },
     '16:9': { width: 1920, height: 1080 },
+    '2:1': { width: 2160, height: 1080 },
+    '21:9': { width: 2520, height: 1080 },
   },
   '4K': {
     '9:16': { width: 2160, height: 3840 },
+    '4:5': { width: 2160, height: 2700 },
+    '3:4': { width: 2160, height: 2880 },
+    '2:3': { width: 2160, height: 3240 },
     '1:1': { width: 2160, height: 2160 },
+    '5:4': { width: 2700, height: 2160 },
+    '4:3': { width: 2880, height: 2160 },
+    '3:2': { width: 3240, height: 2160 },
     '16:9': { width: 3840, height: 2160 },
+    '2:1': { width: 4320, height: 2160 },
+    '21:9': { width: 5040, height: 2160 },
   },
 };
 
@@ -83,7 +116,17 @@ export const FONT_FAMILIES: readonly string[] = [
   '"Special Elite", cursive',
   '"IM Fell English", serif',
   '"Courier Prime", monospace',
+  '"Anton", sans-serif',
+  '"Bebas Neue", sans-serif',
+  '"Montserrat", sans-serif',
+  '"Oswald", sans-serif',
+  '"Merriweather", serif',
+  '"Lora", serif',
+  '"Raleway", sans-serif',
+  '"Inter", sans-serif',
 ] as const;
+
+export const TEXT_ALIGNS = ['left', 'center', 'right', 'justify'] as const;
 
 export const DEFAULTS = {
   aspect: '9:16' as AspectRatio,
@@ -94,9 +137,16 @@ export const DEFAULTS = {
   cutsPerSec: 12,
   zoomMax: 1.2,
   blurMax: 0,
+  letterSize: 1.0,
   durationSec: 2,
   seed: 0x12345678,
   lockedFont: 'auto' as string,
+  textAlign: 'center' as import('./types.ts').TextAlign,
+  textBold: false,
+  textItalic: false,
+  textStrike: false,
+  textUnderline: false,
+  templateBackground: 'auto' as import('./types.ts').TemplateBackground,
 } as const;
 
 export function clampCutsPerSec(n: number): number {
@@ -109,4 +159,8 @@ export function clampZoom(n: number): number {
 
 export function clampBlur(n: number): number {
   return Math.max(LIMITS.blur.min, Math.min(LIMITS.blur.max, n));
+}
+
+export function clampLetterSize(n: number): number {
+  return Math.max(LIMITS.letterSize.min, Math.min(LIMITS.letterSize.max, n));
 }

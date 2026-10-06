@@ -1,7 +1,7 @@
 // src/types.ts — shared interfaces for MatchCutter
 // All modules talk only through these types. No circular imports.
 
-export type AspectRatio = '9:16' | '1:1' | '16:9';
+export type AspectRatio = '9:16' | '1:1' | '16:9' | '4:5' | '3:4' | '4:3' | '3:2' | '2:3' | '21:9' | '5:4' | '2:1';
 
 export type VideoFormat = 'mp4' | 'webm';
 
@@ -11,6 +11,20 @@ export type SoundEffect =
   'paperShuffle' | 'cameraShutter' | 'filmAdvance' | 'polaroid' | 'flashPop' | 'none';
 
 export type HighlightStyle = 'marker' | 'underline' | 'box';
+
+export type TextAlign = 'left' | 'center' | 'right' | 'justify';
+
+export type TemplateBackground =
+  | 'auto'
+  | 'newspaper'
+  | 'book'
+  | 'magazine'
+  | 'typewriter'
+  | 'vintage'
+  | 'tabloid'
+  | 'notebook'
+  | 'modern'
+  | 'cinematic';
 
 export interface ParsedInput {
   raw: string;
@@ -49,6 +63,7 @@ export interface FrameSpec {
   fillerLines: string[];
   zoom: number; // 1.0 = no zoom
   blur: number; // 0-3 px
+  letterSize?: number; // kept for future per-frame size, currently via RenderDims.fontScale
 }
 
 export type Timeline = FrameSpec[];
@@ -59,12 +74,20 @@ export interface TimelineOpts {
   zoomMax: number; // 1.0-3.0
   blurMax: number; // 0-3
   seed: number; // u32
+  letterSize?: number; // 0.5-2.0, kept for completeness, render uses dims.fontScale
 }
 
 export interface RenderDims {
   width: number;
   height: number;
   aspect: AspectRatio;
+  fontScale?: number; // 0.5-2.0 letter size multiplier, default 1.0
+  textAlign?: TextAlign; // default 'center' — always keeps frame content centered & fitted
+  bold?: boolean;
+  italic?: boolean;
+  strike?: boolean;
+  underline?: boolean;
+  templateBackground?: TemplateBackground; // drives newspaper/book/magazine bg with printed text alongside highlight
 }
 
 export interface EncodeOpts {
@@ -110,6 +133,35 @@ export interface AppConfig {
   cutsPerSec: number;
   zoomMax: number;
   blurMax: number;
+  letterSize: number; // 0.5-2.0
   durationSec: number;
   lockedFont: 'auto' | (string & {}); // 'auto' for mixed clippings or exact fontFamily from presets
+  textAlign: TextAlign; // default 'center' — always keeps text centered & auto-fitted, no crop
+  bold: boolean;
+  italic: boolean;
+  strike: boolean;
+  underline: boolean;
+  templateBackground: TemplateBackground;
+}
+
+export interface Template {
+  id: string;
+  name: string;
+  description: string;
+  phrase: string; // includes ==focal== (must be ≤23 chars focal)
+  aspect: AspectRatio;
+  font: string; // exact fontFamily or 'auto'
+  textAlign: TextAlign;
+  bold: boolean;
+  italic: boolean;
+  strike: boolean;
+  underline: boolean;
+  letterSize: number;
+  cutsPerSec: number;
+  zoomMax: number;
+  blurMax: number;
+  // visual hint for card
+  accent: string; // css color for border/accent
+  paperHint: string; // paper id hint for style
+  background: TemplateBackground; // drives newspaper/book/magazine printed bg alongside highlight
 }
