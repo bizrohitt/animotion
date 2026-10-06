@@ -16,9 +16,9 @@ export function getHighlightBBox(
   focalWidth: number,
   fontSize: number,
 ): BBox {
-  // Estimate bbox: marker behind text
-  const padX = fontSize * 0.12;
-  const padY = fontSize * 0.18;
+  // Bigger highlight for scanned backgrounds — 25% larger phrase needs more bleed
+  const padX = fontSize * 0.18;
+  const padY = fontSize * 0.22;
   return {
     x: originX + prefixWidth - padX,
     y: baselineY - fontSize + padY * 0.5,
@@ -34,11 +34,9 @@ export function drawHighlight(
 ): void {
   ctx.save();
   if (style === 'marker') {
-    ctx.fillStyle = 'rgba(255,235,59,0.55)';
-    // slight rotation for hand-marker feel? keep axis-aligned for simplicity
-    const r = 3;
+    ctx.fillStyle = 'rgba(255,235,59,0.72)';
+    const r = 4;
     const { x, y, width, height } = bbox;
-    // rounded rect
     ctx.beginPath();
     if (typeof ctx.roundRect === 'function') {
       ctx.roundRect(x, y, width, height, r);
@@ -46,6 +44,10 @@ export function drawHighlight(
       ctx.rect(x, y, width, height);
     }
     ctx.fill();
+    // subtle outline to pop over dense newsprint/book text
+    ctx.strokeStyle = 'rgba(180,140,0,0.35)';
+    ctx.lineWidth = Math.max(1, height * 0.06);
+    ctx.stroke();
   } else if (style === 'underline') {
     ctx.strokeStyle = 'rgba(220,20,60,0.92)';
     ctx.lineWidth = Math.max(2, bbox.height * 0.08);
@@ -75,7 +77,7 @@ export function drawHighlight(
 }
 
 export function getHighlightStyleColor(style: HighlightStyle): string {
-  if (style === 'marker') return 'rgba(255,235,59,0.55)';
+  if (style === 'marker') return 'rgba(255,235,59,0.72)';
   if (style === 'underline') return 'rgba(220,20,60,0.92)';
   return 'rgba(30,30,30,0.92)';
 }

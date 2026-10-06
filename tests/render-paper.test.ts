@@ -96,8 +96,8 @@ describe('drawPaper', () => {
 describe('highlight', () => {
   it('getHighlightBBox computes pad correctly', () => {
     const bbox = getHighlightBBox(100, 200, 50, 80, 40);
-    expect(bbox.x).toBeCloseTo(100 + 50 - 40 * 0.12, 5);
-    expect(bbox.width).toBeCloseTo(80 + 40 * 0.24, 5);
+    expect(bbox.x).toBeCloseTo(100 + 50 - 40 * 0.18, 5);
+    expect(bbox.width).toBeCloseTo(80 + 40 * 0.36, 5);
     expect(bbox.height).toBeCloseTo(40 * 0.95, 5);
   });
 

@@ -86,44 +86,21 @@ function drawScannedWithCenterMask(
   img: HTMLImageElement,
   width: number,
   height: number,
-  cy: number,
-  bandTop: number,
-  bandBottom: number,
+  _cy: number,
+  _bandTop: number,
+  _bandBottom: number,
 ): boolean {
   if (!isImageReady(img)) return false;
   const inset = 14;
   const pw = width - 2 * inset;
   const ph = height - 2 * inset;
-  // Draw image to cover paper area — keep aspect, centered
   ctx.save();
   ctx.globalAlpha = 0.92;
-  // Clip to paper area so zoom/rotation doesn't bleed
-  // We are inside the paper's zoom/rotation already, so just draw to inset
   try {
-    // Draw image stretched to paper area (slight stretch is okay for scan)
     ctx.drawImage(img, inset, inset, pw, ph);
   } catch {
     ctx.restore();
     return false;
-  }
-  // Re-paint center band with paper tint to guarantee highlight legibility
-  // Use a soft paper-colored rectangle plus subtle paper grain already underneath
-  // We use the paper tint (cream) with 0.96 opacity to blank center
-  ctx.globalAlpha = 1;
-  // Create a blank strip where highlight lives — mimic the blank center the prompt requested
-  // Add a tiny feather by drawing with composite
-  ctx.fillStyle = 'rgba(255, 253, 248, 0.96)';
-  // Slightly larger than band to ensure no text under highlight
-  const pad = 6;
-  ctx.fillRect(inset, bandTop - pad, pw, bandBottom - bandTop + pad * 2);
-  // Add back faint horizontal rules in center band to keep texture but no text
-  ctx.strokeStyle = 'rgba(80,80,90,0.06)';
-  ctx.lineWidth = 0.5;
-  for (let y = bandTop + 8; y < bandBottom; y += 12) {
-    ctx.beginPath();
-    ctx.moveTo(inset + 8, y);
-    ctx.lineTo(inset + pw - 8, y);
-    ctx.stroke();
   }
   ctx.restore();
   return true;
@@ -198,17 +175,13 @@ function drawNewspaper(
     const headline = NEWSPAPER_HEADLINES[c % NEWSPAPER_HEADLINES.length] ?? '';
     const hlLines = wrapWords(ctx, headline.split(/\s+/), colW);
     for (const ln of hlLines.slice(0, 2)) {
-      if (y >= bandTop && y <= bandBottom) {
-        y += lineH;
-        continue;
-      }
       if (y > bottomY) break;
       ctx.textAlign = 'left';
       ctx.textBaseline = 'middle';
       ctx.fillText(ln, colX, y);
       y += headSize * 1.2;
     }
-    if (y < bottomY && !(y >= bandTop && y <= bandBottom)) {
+    if (y < bottomY) {
       ctx.strokeStyle = 'rgba(20,20,20,0.18)';
       ctx.lineWidth = 0.8;
       ctx.beginPath();
@@ -224,11 +197,6 @@ function drawNewspaper(
     const offset = (c * 7) % Math.max(1, bodyLines.length);
     let bi = offset;
     while (y < bottomY - lineH) {
-      if (y >= bandTop && y <= bandBottom) {
-        y += lineH;
-        if (y < bandBottom) y = bandBottom + lineH * 0.6;
-        continue;
-      }
       const line = bodyLines[bi % bodyLines.length] ?? '';
       ctx.fillText(line, colX, y);
       y += lineH;
@@ -261,13 +229,9 @@ function drawBook(
   const safeW = width - 2 * inset;
   const topY = inset + 10;
   const bottomY = height - inset - 14;
-  const centerBand = fontSize * 1.7;
-  const bandTop = cy - centerBand;
-  const bandBottom = cy + centerBand;
-
   const scanned = getScannedImage('book');
   if (isImageReady(scanned)) {
-    drawScannedWithCenterMask(ctx, scanned!, width, height, cy, bandTop, bandBottom);
+    drawScannedWithCenterMask(ctx, scanned!, width, height, cy, 0, 0);
   }
 
   ctx.save();
@@ -287,10 +251,6 @@ function drawBook(
   let idx = 0;
   let first = true;
   while (y < bottomY - lineH) {
-    if (y >= bandTop && y <= bandBottom) {
-      y = bandBottom + lineH * 0.8;
-      continue;
-    }
     const line = lines[idx % lines.length] ?? '';
     if (!line) {
       idx++;
@@ -336,13 +296,9 @@ function drawMagazine(
   const safeW = width - 2 * inset;
   const topY = inset + 6;
   const bottomY = height - inset - 8;
-  const centerBand = fontSize * 1.6;
-  const bandTop = cy - centerBand;
-  const bandBottom = cy + centerBand;
-
   const scanned = getScannedImage('magazine');
   if (isImageReady(scanned)) {
-    drawScannedWithCenterMask(ctx, scanned!, width, height, cy, bandTop, bandBottom);
+    drawScannedWithCenterMask(ctx, scanned!, width, height, cy, 0, 0);
   }
 
   ctx.fillStyle = 'rgba(180,28,28,0.85)';
@@ -351,7 +307,7 @@ function drawMagazine(
   ctx.textBaseline = 'middle';
   const kicker = 'FEATURE • CULTURE • ISSUE 42';
   let y = topY + 8;
-  if (!(y >= bandTop && y <= bandBottom)) ctx.fillText(kicker, inset, y);
+  ctx.fillText(kicker, inset, y);
   y += fontSize * 0.45;
 
   ctx.fillStyle = 'rgba(15,15,15,0.85)';
@@ -361,10 +317,6 @@ function drawMagazine(
   const hl = 'STYLE OF THE SEASON';
   const hlLines = wrapWords(ctx, hl.split(/\s+/), safeW);
   for (const ln of hlLines.slice(0, 2)) {
-    if (y >= bandTop && y <= bandBottom) {
-      y += headSize * 1.1;
-      continue;
-    }
     if (y > bottomY) break;
     ctx.fillText(ln, inset, y);
     y += headSize * 1.05;
@@ -383,8 +335,7 @@ function drawMagazine(
   const imgX = inset;
   const imgY = y;
   const imgBottom = imgY + imgH;
-  const imgOverlaps = !(imgBottom < bandTop || imgY > bandBottom);
-  if (!imgOverlaps && imgBottom < bottomY) {
+  if (imgBottom < bottomY) {
     ctx.fillStyle = 'rgba(210,210,215,0.9)';
     ctx.fillRect(imgX, imgY, imgW, imgH);
     ctx.strokeStyle = 'rgba(150,150,155,0.9)';
@@ -400,7 +351,9 @@ function drawMagazine(
     ctx.font = `400 ${Math.round(fontSize * 0.22)}px "Inter", sans-serif`;
     ctx.fillText('FIG. 01 — PRINTED MATTER', imgX, imgY + imgH + 8);
     y = imgBottom + 18;
-  } else if (imgOverlaps) y = bandBottom + 14;
+  } else {
+    y += headSize * 0.5;
+  }
 
   const cols = 2;
   const gutter = 12;
@@ -415,10 +368,6 @@ function drawMagazine(
     let cy2 = y;
     let count = 0;
     while (cy2 < bottomY - lineH && count < 14) {
-      if (cy2 >= bandTop && cy2 <= bandBottom) {
-        cy2 = bandBottom + 8;
-        continue;
-      }
       const line = bodyLines[(bi + count) % bodyLines.length] ?? '';
       ctx.font = `400 ${bodySize}px "Inter", sans-serif`;
       ctx.fillStyle = c === 0 ? 'rgba(30,30,35,0.62)' : 'rgba(30,30,35,0.48)';
@@ -432,7 +381,7 @@ function drawMagazine(
   }
 
   const pqY = bottomY - lineH * 1.2;
-  if (pqY > bandBottom + 12 && pqY < bottomY) {
+  if (pqY < bottomY) {
     ctx.fillStyle = 'rgba(180,28,28,0.12)';
     ctx.fillRect(inset, pqY - 10, safeW, 28);
     ctx.fillStyle = 'rgba(20,20,20,0.68)';
@@ -457,16 +406,13 @@ function drawTypewriter(
   const safeW = width - 2 * inset;
   const topY = inset + 6;
   const bottomY = height - inset - 6;
-  const bandTop = cy - fontSize * 1.6;
-  const bandBottom = cy + fontSize * 1.6;
   const scanned = getScannedImage('typewriter');
-  if (isImageReady(scanned)) drawScannedWithCenterMask(ctx, scanned!, width, height, cy, bandTop, bandBottom);
+  if (isImageReady(scanned)) drawScannedWithCenterMask(ctx, scanned!, width, height, cy, 0, 0);
 
   ctx.strokeStyle = 'rgba(80,80,90,0.14)';
   ctx.lineWidth = 0.7;
   const lineStep = Math.round(fontSize * 0.62);
   for (let y = topY; y < bottomY; y += lineStep) {
-    if (y >= bandTop && y <= bandBottom) continue;
     ctx.beginPath();
     ctx.moveTo(inset, y);
     ctx.lineTo(width - inset, y);
@@ -492,10 +438,6 @@ function drawTypewriter(
   let y = topY + 6;
   let idx = 0;
   while (y < bottomY - 10) {
-    if (y >= bandTop && y <= bandBottom) {
-      y = bandBottom + 8;
-      continue;
-    }
     const ln = lines[idx % lines.length] ?? '';
     // FIXED jitter pattern, not spec.index
     const jitter = (idx % 3) * 0.6 - 0.6;
@@ -520,15 +462,12 @@ function drawNotebook(
   const safeW = width - 2 * inset;
   const topY = inset + 12;
   const bottomY = height - inset - 10;
-  const bandTop = cy - fontSize * 1.6;
-  const bandBottom = cy + fontSize * 1.6;
   const scanned = getScannedImage('notebook');
-  if (isImageReady(scanned)) drawScannedWithCenterMask(ctx, scanned!, width, height, cy, bandTop, bandBottom);
+  if (isImageReady(scanned)) drawScannedWithCenterMask(ctx, scanned!, width, height, cy, 0, 0);
   ctx.strokeStyle = 'rgba(100,140,200,0.22)';
   ctx.lineWidth = 0.8;
   const step = Math.round(fontSize * 0.72);
   for (let y = topY; y < bottomY; y += step) {
-    if (y >= bandTop && y <= bandBottom) continue;
     ctx.beginPath();
     ctx.moveTo(inset, y);
     ctx.lineTo(width - inset, y);
@@ -549,10 +488,6 @@ function drawNotebook(
   let y = topY + 2;
   let idx = 0;
   while (y < bottomY - 8) {
-    if (y >= bandTop && y <= bandBottom) {
-      y = bandBottom + 10;
-      continue;
-    }
     const ln = lines[idx % lines.length] ?? '';
     ctx.fillText(ln, inset + 32, y);
     y += step;
@@ -631,7 +566,7 @@ export function drawTemplateBackground(
     drawGeneric(ctx, width, height, cx, cy, fontSize, spec, dims);
   } else if (bg === 'cinematic') {
     const scannedC = getScannedImage('cinematic');
-    if (isImageReady(scannedC)) drawScannedWithCenterMask(ctx, scannedC!, width, height, cy, cy - fontSize * 1.6, cy + fontSize * 1.6);
+    if (isImageReady(scannedC)) drawScannedWithCenterMask(ctx, scannedC!, width, height, cy, 0, 0);
     const inset = 22;
     ctx.fillStyle = 'rgba(10,10,12,0.92)';
     ctx.fillRect(inset, inset, width - 2 * inset, 32);
@@ -639,7 +574,6 @@ export function drawTemplateBackground(
     ctx.strokeStyle = 'rgba(255,255,255,0.04)';
     ctx.lineWidth = 1;
     for (let y = inset + 32 + 8; y < height - inset - 32; y += 6) {
-      if (y >= cy - fontSize * 1.6 && y <= cy + fontSize * 1.6) continue;
       ctx.beginPath();
       ctx.moveTo(inset, y);
       ctx.lineTo(width - inset, y);

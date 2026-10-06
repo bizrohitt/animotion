@@ -36,6 +36,9 @@ export function drawFrame(
   const cx = width / 2;
   const cy = height / 2;
   let fontSize = getFontSizeForDims(dims);
+  // Medium boost for scanned backgrounds — 25% larger so highlight merges inline but pops
+  const hasScannedBg = !!dims.templateBackground && dims.templateBackground !== 'auto';
+  if (hasScannedBg) fontSize = Math.round(fontSize * 1.25);
   const textAlign = dims.textAlign ?? 'center';
   const isBold = !!dims.bold;
   const isItalic = !!dims.italic;
@@ -258,11 +261,21 @@ export function drawFrame(
   ctx.fillText(parsed.fullPhrase, originX, originY);
   ctx.restore();
 
-  // main phrase (crisp)
+  // main phrase (crisp) — for scanned backgrounds add white halo + slightly heavier so it merges inline but pops
   ctx.fillStyle = '#0f0f0f';
   ctx.font = font;
   ctx.textBaseline = 'middle';
   ctx.textAlign = 'left';
+  if (hasScannedBg) {
+    ctx.save();
+    ctx.strokeStyle = 'rgba(255,255,255,0.92)';
+    ctx.lineWidth = Math.max(2.5, fontSize * 0.12);
+    ctx.lineJoin = 'round';
+    ctx.miterLimit = 2;
+    // halo stroke first so fill sits cleanly on top
+    ctx.strokeText(parsed.fullPhrase, originX, originY);
+    ctx.restore();
+  }
   // For justify we handled spread above; otherwise normal
   ctx.fillText(parsed.fullPhrase, originX, originY);
 
