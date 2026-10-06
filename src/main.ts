@@ -159,20 +159,27 @@ async function onDownload(): Promise<void> {
     return;
   }
   if (btnDl) btnDl.disabled = true;
+  const dbg = (...a: unknown[]): void => {
+    try { console.log('[MatchCutter download]', ...a); } catch {}
+  };
   try {
     setProgress(progressEl, 0);
     if (errEl) errEl.textContent = 'Mixing audio...';
     const c = getControls();
+    dbg('controls', c);
     const audioBuf = await mixdown(timeline, c.soundEnabled ? c.soundEffect : 'none');
+    dbg('mixdown done', audioBuf?.duration, audioBuf?.sampleRate);
     if (errEl) errEl.textContent = 'Encoding video...';
     const exp = getExportDims(c.aspect, c.exportQuality);
     const fullDims = { width: exp.width, height: exp.height, aspect: c.aspect } as const;
+    dbg('export dims', fullDims, 'fps', c.cutsPerSec, 'fmt', c.format);
     const enc = c.format === 'webm' ? encodeWebM : encodeMP4;
     let blob: Blob;
     let filename: string;
     try {
       let ext = c.format;
       try {
+        dbg('try primary', ext);
         blob = await enc(timeline, parsed, {
           dims: fullDims,
           fps: c.cutsPerSec,
@@ -180,7 +187,9 @@ async function onDownload(): Promise<void> {
           onProgress: (r: number) => setProgress(progressEl, r),
           quality: c.exportQuality,
         } as never);
-      } catch {
+        dbg('primary ok', blob.size, blob.type);
+      } catch (e1) {
+        dbg('primary failed', String((e1 as Error)?.message ?? e1), 'try fallback');
         const fb = c.format === 'mp4' ? encodeWebM : encodeMP4;
         blob = await fb(timeline, parsed, {
           dims: fullDims,
@@ -190,21 +199,56 @@ async function onDownload(): Promise<void> {
           quality: c.exportQuality,
         } as never);
         ext = c.format === 'mp4' ? 'webm' : 'mp4';
+        dbg('fallback ok', blob.size, blob.type, 'ext', ext);
       }
+      if (!blob || blob.size === 0) throw new Error('Encoder produced empty file');
       filename = filenameFor(ext as 'mp4' | 'webm');
-      if (errEl)
-        errEl.textContent = `Downloaded ${ext.toUpperCase()} (${Math.round(blob.size / 1024)} KB)`;
-    } catch {
+      if (errEl) errEl.textContent = `Downloaded ${ext.toUpperCase()} (${Math.round(blob.size / 1024)} KB)`;
+    } catch (e2) {
+      dbg('both encoders failed', String((e2 as Error)?.message ?? e2), '→ ZIP');
       if (errEl) errEl.textContent = 'Encoders unavailable — exporting PNG ZIP…';
-      blob = await exportFramesAsZip(timeline, parsed, fullDims, (r) => setProgress(progressEl, r));
-      filename = 'matchcutter-frames.zip';
-      if (errEl)
-        errEl.textContent = `Downloaded ZIP (${Math.round(blob.size / 1024)} KB) — import frames to editor`;
+      try {
+        blob = await exportFramesAsZip(timeline, parsed, fullDims, (r) => setProgress(progressEl, r));
+        dbg('ZIP ok', blob.size);
+      } catch (e3) {
+        dbg('ZIP failed', String((e3 as Error)?.message ?? e3), '→ single PNG fallback');
+        // Last resort: single-frame PNG so user still gets something
+        const canvas1 = document.createElement('canvas');
+        canvas1.width = fullDims.width;
+        canvas1.height = fullDims.height;
+        const ctx1 = canvas1.getContext('2d');
+        if (!ctx1) throw e3;
+        drawFrame(ctx1, timeline[0], parsed, fullDims);
+        const pngBlob: Blob | null = await new Promise((res) =>
+          canvas1.toBlob((b) => res(b), 'image/png'),
+        );
+        if (!pngBlob) throw e3;
+        blob = pngBlob;
+        dbg('PNG fallback ok', blob.size);
+      }
+      filename = blob.type.includes('zip') || blob.size > 50000 ? 'matchcutter-frames.zip' : 'matchcutter-frame.png';
+      // Ensure extension matches blob type
+      if (blob.type === 'image/png' && !filename.endsWith('.png')) filename = 'matchcutter-frame.png';
+      if (blob.type.includes('zip') && !filename.endsWith('.zip')) filename = 'matchcutter-frames.zip';
+      if (errEl) errEl.textContent = `Downloaded ${filename.includes('.zip') ? 'ZIP' : 'PNG'} (${Math.round(blob.size / 1024)} KB) — ${filename.includes('.zip') ? 'import frames to editor' : 'single frame fallback'}`;
     }
-    triggerDownload(blob, filename);
+    dbg('triggerDownload', filename, blob.size, blob.type);
+    try {
+      triggerDownload(blob, filename);
+    } catch (e4) {
+      dbg('triggerDownload threw', String((e4 as Error)?.message ?? e4));
+      // Ultimate fallback: open blob in new tab
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
+      if (errEl) errEl.textContent = `Opened in new tab (${Math.round(blob.size/1024)}KB) — allow popups and Save As`;
+      setTimeout(() => URL.revokeObjectURL(url), 60000);
+    }
     setProgress(progressEl, 1);
   } catch (e) {
-    if (errEl) errEl.textContent = String((e as Error).message);
+    const msg = String((e as Error).message ?? e);
+    dbg('outer failed', msg, e);
+    console.error(e);
+    if (errEl) errEl.textContent = `Download failed: ${msg} (try 720p/WebM or check console)`;
   } finally {
     if (btnDl) btnDl.disabled = false;
   }
