@@ -27,7 +27,8 @@ const MAGAZINE_BODY_FIXED =
 // Fixed per template, loaded once, reused every frame — exact same background every cut
 const _imgCache = new Map<string, HTMLImageElement>();
 
-function getScannedImage(name: 'newspaper' | 'book' | 'magazine'): HTMLImageElement | null {
+function getScannedImage(name: TemplateBackground): HTMLImageElement | null {
+  if (name === 'auto') return null;
   if (typeof document === 'undefined' || typeof Image === 'undefined') return null;
   if (_imgCache.has(name)) return _imgCache.get(name) ?? null;
   const img = new Image();
@@ -148,12 +149,11 @@ function drawNewspaper(
   const bandBottom = cy + centerBand;
 
   // Try real scanned texture first — exact same image every cut (fixed)
-  const scanned = getScannedImage('newspaper');
+  // Use real scanned texture for this background — newspaper/vintage/tabloid each have own scan
+  const scannedName = (_dims.templateBackground ?? 'newspaper') as TemplateBackground;
+  const scanned = getScannedImage(scannedName === 'vintage' || scannedName === 'tabloid' ? scannedName : 'newspaper');
   if (isImageReady(scanned)) {
-    // Draw scanned image as base, with center band blanked
-    // Do this BEFORE procedural so procedural can add crisp vector text on top for sharpness
     drawScannedWithCenterMask(ctx, scanned!, width, height, cy, bandTop, bandBottom);
-    // Fall through to draw crisp vector masthead/columns on top for sharp text at any res
   }
 
   // Masthead — FIXED (not per spec.index)
@@ -459,6 +459,8 @@ function drawTypewriter(
   const bottomY = height - inset - 6;
   const bandTop = cy - fontSize * 1.6;
   const bandBottom = cy + fontSize * 1.6;
+  const scanned = getScannedImage('typewriter');
+  if (isImageReady(scanned)) drawScannedWithCenterMask(ctx, scanned!, width, height, cy, bandTop, bandBottom);
 
   ctx.strokeStyle = 'rgba(80,80,90,0.14)';
   ctx.lineWidth = 0.7;
@@ -520,6 +522,8 @@ function drawNotebook(
   const bottomY = height - inset - 10;
   const bandTop = cy - fontSize * 1.6;
   const bandBottom = cy + fontSize * 1.6;
+  const scanned = getScannedImage('notebook');
+  if (isImageReady(scanned)) drawScannedWithCenterMask(ctx, scanned!, width, height, cy, bandTop, bandBottom);
   ctx.strokeStyle = 'rgba(100,140,200,0.22)';
   ctx.lineWidth = 0.8;
   const step = Math.round(fontSize * 0.72);
@@ -626,6 +630,8 @@ export function drawTemplateBackground(
     }
     drawGeneric(ctx, width, height, cx, cy, fontSize, spec, dims);
   } else if (bg === 'cinematic') {
+    const scannedC = getScannedImage('cinematic');
+    if (isImageReady(scannedC)) drawScannedWithCenterMask(ctx, scannedC!, width, height, cy, cy - fontSize * 1.6, cy + fontSize * 1.6);
     const inset = 22;
     ctx.fillStyle = 'rgba(10,10,12,0.92)';
     ctx.fillRect(inset, inset, width - 2 * inset, 32);
@@ -651,6 +657,12 @@ if (typeof document !== 'undefined') {
     getScannedImage('newspaper');
     getScannedImage('book');
     getScannedImage('magazine');
+    getScannedImage('typewriter');
+    getScannedImage('vintage');
+    getScannedImage('tabloid');
+    getScannedImage('notebook');
+    getScannedImage('modern');
+    getScannedImage('cinematic');
   } catch {
     // ignore
   }
