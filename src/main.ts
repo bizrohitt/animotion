@@ -86,7 +86,7 @@ async function build(raw: string): Promise<boolean> {
   if (c.lockedFont && c.lockedFont !== 'auto') {
     timeline = timeline.map((f) => ({ ...f, fontFamily: c.lockedFont }));
   }
-  await ensureFontsLoaded([...new Set(timeline.map((f) => f.fontFamily))]);
+  await ensureFontsLoaded([...new Set([...timeline.map((f) => f.fontFamily), '"JetBrains Mono"'])]);
   if (parsed) updatePosterMeta(parsed);
   return true;
 }

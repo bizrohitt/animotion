@@ -71,10 +71,10 @@ export function drawFrame(
   );
   const originY = cy;
 
-  // filler lines (draw faintly above/below)
+  // filler lines (background text) — JetBrains Mono per request (monospace, OFL)
   if (spec.fillerLines.length > 0) {
     const fillerSize = Math.round(fontSize * 0.34);
-    ctx.font = `${400} ${fillerSize}px ${spec.fontFamily}`;
+    ctx.font = `${400} ${fillerSize}px "JetBrains Mono", monospace`;
     ctx.fillStyle = 'rgba(30,30,30,0.38)';
     const lineH = fillerSize * 1.5;
     let fy = originY - fontSize - lineH;
